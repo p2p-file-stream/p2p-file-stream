@@ -23,7 +23,7 @@ class DeviceController(val repository: DeviceRepository) {
 
     class RegisterRequest(
         val device: Device,
-        val jwt: String
+        val jwt: String?
     ) {
         fun validate() {
             if (device.account != null) {
