@@ -15,7 +15,10 @@ class DeviceController(val repository: DeviceRepository) {
         } catch (e: RegisterRequestException) {
             return RegisterResponse(e)
         }
-        val device = repository.save(registerRequest.device)
+        val device = repository.saveOrNull(registerRequest.device)
+        if (device == null) {
+            return RegisterResponse(RegisterRequestException("Nickname already exists"))
+        }
         return RegisterResponse(device)
     }
 
