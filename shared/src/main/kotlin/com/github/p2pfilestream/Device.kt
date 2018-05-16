@@ -12,9 +12,9 @@ import javax.persistence.Id
 @Entity
 data class Device(
     @Column(unique = true)
-    val nick: String,
+    val nickname: String,
 
-    val account: Account,
+    val account: Account?,
 
     @Id @GeneratedValue
     val id: Long = 0
