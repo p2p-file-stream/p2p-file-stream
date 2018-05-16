@@ -1,6 +1,7 @@
 package com.github.p2pfilestream.accountserver
 
 import com.github.p2pfilestream.Device
+import org.hibernate.exception.ConstraintViolationException
 import org.springframework.data.repository.CrudRepository
 
 interface DeviceRepository : CrudRepository<Device, Long> {
@@ -15,6 +16,10 @@ fun DeviceRepository.saveOrNull(device: Device): Device? {
     try {
         return save(device)
     } catch (e: Exception) {
-        return null
+        if (e.cause is ConstraintViolationException) {
+            // Nickname already exits (violation of unique constraint)
+            return null
+        }
+        throw e
     }
 }
