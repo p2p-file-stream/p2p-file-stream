@@ -1,9 +1,11 @@
 package com.github.p2pfilestream.accountserver
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
+@EntityScan("com.github.p2pfilestream")
 class AccountServerApplication
 
 fun main(args: Array<String>) {
