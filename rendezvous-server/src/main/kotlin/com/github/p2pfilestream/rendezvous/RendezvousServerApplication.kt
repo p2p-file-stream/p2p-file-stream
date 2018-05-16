@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvous.server
+package com.github.p2pfilestream.rendezvous
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

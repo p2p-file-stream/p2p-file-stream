@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvous.server
+package com.github.p2pfilestream.rendezvous
 
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.TextMessage
