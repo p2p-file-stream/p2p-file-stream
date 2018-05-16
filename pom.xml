@@ -11,6 +11,15 @@
 
     <modules>
         <module>rendezvous-server</module>
+        <module>shared</module>
     </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <kotlin.version>1.2.41</kotlin.version>
+    </properties>
+
 
 </project>

@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvousserver
+package com.github.p2pfilestream.rendezvous.server
 
 
 import org.assertj.core.api.Assertions.assertThat
