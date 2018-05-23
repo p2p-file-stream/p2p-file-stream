@@ -13,6 +13,7 @@
         <module>rendezvous-server</module>
         <module>shared</module>
         <module>account-server</module>
+        <module>desktop-client</module>
     </modules>
 
     <properties>

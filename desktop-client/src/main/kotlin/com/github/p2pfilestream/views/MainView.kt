@@ -1,26 +1,26 @@
 package com.github.p2pfilestream.views
 
-import com.github.p2pfilestream.Styles
-import javafx.scene.control.Alert.AlertType.INFORMATION
 import tornadofx.*
 
-class MainView : View("Hello TornadoFX") {
+class MainView : View("P2P File Stream") {
+    val sessionController: SessionController by inject()
+
     override val root = borderpane {
-        addClass(Styles.welcomeScreen)
         top {
-            stackpane {
-                label(title).addClass(Styles.heading)
+            hbox {
+                label(sessionController.nickname)
+                label(sessionController.username ?: "Anonymous")
             }
         }
         center {
             stackpane {
-                addClass(Styles.content)
-                button("Click me") {
-                    setOnAction {
-                        alert(INFORMATION, "Well done!", "You clicked me!")
-                    }
-                }
+
             }
         }
     }
+}
+
+class SessionController : Controller() {
+    val nickname: String = "Jan2000"
+    val username: String? = "Jan Jansen"
 }
