@@ -1,4 +1,4 @@
-package com.github.p2pfilestream
+package com.github.p2pfilestream.chat
 
 import java.util.*
 

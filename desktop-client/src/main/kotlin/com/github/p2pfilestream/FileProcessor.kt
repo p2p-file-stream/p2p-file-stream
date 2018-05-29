@@ -1,5 +1,6 @@
 package com.github.p2pfilestream
 
+import com.github.p2pfilestream.chat.BinaryMessageChunk
 import io.reactivex.Emitter
 import io.reactivex.Flowable
 import java.io.BufferedInputStream
