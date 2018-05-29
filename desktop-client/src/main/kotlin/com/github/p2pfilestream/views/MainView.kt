@@ -38,8 +38,8 @@ class MainView : View("P2P File Stream") {
         if (file != null) {
             println("You choosed: ${file.name}")
             // InputStreams are used to read binaries
-            val fileProcessor = FileProcessor()
-            fileProcessor.readFile(file)
+            val fileProcessor = FileProcessor(file)
+            fileProcessor.flowable()
         } else {
             println("File picker cancelled")
         }

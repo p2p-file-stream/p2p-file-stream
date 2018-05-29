@@ -1,21 +1,30 @@
 package com.github.p2pfilestream
 
+import io.reactivex.Emitter
+import io.reactivex.Flowable
+import java.io.BufferedInputStream
 import java.io.File
-import java.nio.charset.Charset
 
-class FileProcessor {
-    fun readFile(file: File) {
-        val inputStream = file.inputStream()
-        val data = ByteArray(8)
-        var bytesRead = inputStream.read(data)
-        while (bytesRead != -1) {
-            processChunk(data, bytesRead)
-            bytesRead = inputStream.read(data)
+
+class FileProcessor(val file: File) {
+    fun flowable(): Flowable<BinaryMessageChunk> {
+        val consumer = { inputStream: BufferedInputStream, emitter: Emitter<BinaryMessageChunk> ->
+            val data = ByteArray(8)
+            val bytesRead = inputStream.read(data)
+            if (bytesRead != -1) {
+                val chunk = processChunk(data, bytesRead)
+                emitter.onNext(chunk)
+            } else {
+                emitter.onComplete()
+            }
         }
-        inputStream.close()
+        return Flowable.generate(
+            { file.inputStream().buffered() },
+            consumer, { inputStream: BufferedInputStream -> inputStream.close() }
+        )
     }
 
-    private fun processChunk(bytes: ByteArray, bytesRead: Int) {
-        println("Chunk: " + bytes.toString(Charset.defaultCharset()))
+    private fun processChunk(bytes: ByteArray, bytesRead: Int): BinaryMessageChunk {
+        return BinaryMessageChunk(0, bytes.take(bytesRead).toByteArray())
     }
 }
