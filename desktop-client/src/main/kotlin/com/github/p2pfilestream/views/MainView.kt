@@ -1,5 +1,6 @@
 package com.github.p2pfilestream.views
 
+import com.github.p2pfilestream.FileProcessor
 import javafx.collections.FXCollections
 import tornadofx.*
 
@@ -32,7 +33,16 @@ class MainView : View("P2P File Stream") {
     }
 
     private fun openFile() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val file = chooseFile("Upload file", emptyArray())
+            .firstOrNull()
+        if (file != null) {
+            println("You choosed: ${file.name}")
+            // InputStreams are used to read binaries
+            val fileProcessor = FileProcessor()
+            fileProcessor.readFile(file)
+        } else {
+            println("File picker cancelled")
+        }
     }
 
     private fun sendMessage(text: String) {
