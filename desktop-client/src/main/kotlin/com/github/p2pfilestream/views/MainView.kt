@@ -1,9 +1,11 @@
 package com.github.p2pfilestream.views
 
+import javafx.collections.FXCollections
 import tornadofx.*
 
 class MainView : View("P2P File Stream") {
     val sessionController: SessionController by inject()
+    val chatMessages = FXCollections.observableArrayList<String>()
 
     override val root = borderpane {
         top {
@@ -13,9 +15,29 @@ class MainView : View("P2P File Stream") {
             }
         }
         center {
-            stackpane {
-
+            vbox {
+                listview(chatMessages)
+                val messageTextArea = textarea {
+                    promptText = "Message"
+                }
+                button("Send text") {
+                    shortcut("Ctrl+Enter")
+                    action { sendMessage(messageTextArea.text) }
+                }
+                button("Upload file") {
+                    action(::openFile)
+                }
             }
+        }
+    }
+
+    private fun openFile() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun sendMessage(text: String) {
+        if (!text.isBlank()) {
+            chatMessages.add(text)
         }
     }
 }
