@@ -8,16 +8,15 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class FileProcessorTest {
-    private val fileProcessor = FileProcessor()
+class FileSenderTest {
+    private val fileProcessor = FileSender(::println)
 
     @Test
-    fun `Split stream in chunks`() {
+    fun `Split file in chunks`() {
         val file = File.createTempFile("HelloWorld", null)
         file.writeText("Hello World, this is a test file!")
-        val result = fileProcessor.read(file)
-            .toList().blockingGet()
-            .joinToString("") { String(it.payload) }
+        val result = fileProcessor.read(file.inputStream())
+        //todo
         assertThat(result).isEqualTo("Hello World, this is a test file!")
     }
 

@@ -1,12 +1,19 @@
 package com.github.p2pfilestream.views
 
-import com.github.p2pfilestream.FileProcessor
-import javafx.collections.FXCollections
+import com.github.p2pfilestream.Device
 import tornadofx.*
 
 class MainView : View("P2P File Stream") {
-    val sessionController: SessionController by inject()
-    val chatMessages = FXCollections.observableArrayList<String>()
+    private val sessionController: SessionController by inject()
+    private val chats = mutableListOf<Chat>().observable()
+    private val currentChat: ChatModel by inject()
+
+    init {
+        chats.addAll(
+            Chat(Device("MyFriend", null, 123)),
+            Chat(Device("AnotherFriend", null, 321))
+        )
+    }
 
     override val root = borderpane {
         top {
@@ -15,44 +22,26 @@ class MainView : View("P2P File Stream") {
                 label(sessionController.username ?: "Anonymous")
             }
         }
-        center {
-            vbox {
-                listview(chatMessages)
-                val messageTextArea = textarea {
-                    promptText = "Message"
-                }
-                button("Send text") {
-                    shortcut("Ctrl+Enter")
-                    action { sendMessage(messageTextArea.text) }
-                }
-                button("Upload file") {
-                    action(::openFile)
-                }
+        left {
+            listview(chats) {
+                bindSelected(currentChat)
             }
         }
-    }
-
-    private fun openFile() {
-        val file = chooseFile("Upload file", emptyArray())
-            .firstOrNull()
-        if (file != null) {
-            println("You choosed: ${file.name}")
-            // InputStreams are used to read binaries
-            val fileProcessor = FileProcessor()
-            fileProcessor.read(file)
-        } else {
-            println("File picker cancelled")
-        }
-    }
-
-    private fun sendMessage(text: String) {
-        if (!text.isBlank()) {
-            chatMessages.add(text)
-        }
+        center(ChatView::class)
     }
 }
+
+class ChatModel : ItemViewModel<Chat>() {
+    //    val nickname get() = item?.device?.nickname.orEmpty()
+    val device = bind(Chat::device)
+}
+
+class Chat(
+    val device: Device
+)
 
 class SessionController : Controller() {
     val nickname: String = "Jan2000"
     val username: String? = "Jan Jansen"
 }
+
