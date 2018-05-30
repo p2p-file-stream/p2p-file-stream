@@ -1,7 +1,5 @@
-package com.github.p2pfilestream.accountserver
+package com.github.p2pfilestream.accountserver.config
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -11,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices
 import org.springframework.security.oauth2.provider.token.TokenStore
@@ -19,20 +16,18 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
 
 /**
+ * https://medium.com/@nydiarra/secure-a-spring-boot-rest-api-with-json-web-token-reference-to-angular-integration-e57a25806c50
  * Source: https://github.com/nydiarra/springboot-jwt
  */
 @Configuration
 @EnableWebSecurity
-class SecurityConfig : WebSecurityConfigurerAdapter() {
+class SecurityConfig(
+    private val userDetailsService: AppUserDetailsService
+) : WebSecurityConfigurerAdapter() {
 
-    @Value("\${security.signing-key}")
-    private val signingKey: String? = null
+    private val signingKey = "ThisIsSecret"
 
-    @Value("\${security.security-realm}")
-    private val securityRealm: String? = null
-
-    @Autowired
-    private val userDetailsService: UserDetailsService? = null
+    private val securityRealm = "p2p-file.stream"
 
     @Bean
     override fun authenticationManager(): AuthenticationManager {
