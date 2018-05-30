@@ -7,8 +7,11 @@ import java.io.BufferedInputStream
 import java.io.File
 
 
-class FileProcessor(val file: File) {
-    fun flowable(): Flowable<BinaryMessageChunk> {
+class FileProcessor {
+    /** Read file and parse into message-chunk
+     * @return Stream of chunks: a [Flowable] because of backpressure.
+     */
+    fun read(file: File): Flowable<BinaryMessageChunk> {
         val consumer = { inputStream: BufferedInputStream, emitter: Emitter<BinaryMessageChunk> ->
             val data = ByteArray(8)
             val bytesRead = inputStream.read(data)
@@ -27,5 +30,11 @@ class FileProcessor(val file: File) {
 
     private fun processChunk(bytes: ByteArray, bytesRead: Int): BinaryMessageChunk {
         return BinaryMessageChunk(0, bytes.take(bytesRead).toByteArray())
+    }
+
+    fun write(file: File) {
+        val outputStream = file.outputStream().buffered()
+//        outputStream.write()
+        outputStream.close()
     }
 }
