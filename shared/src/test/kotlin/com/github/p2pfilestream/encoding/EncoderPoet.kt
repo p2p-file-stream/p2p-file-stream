@@ -1,17 +1,9 @@
 package com.github.p2pfilestream.encoding
 
-import com.google.testing.compile.CompilationRule
 import com.squareup.kotlinpoet.*
-import javax.lang.model.element.TypeElement
-import javax.lang.model.util.ElementFilter.methodsIn
-import kotlin.reflect.KClass
-
-private val compilation = CompilationRule()
-
-private fun getElement(clazz: KClass<*>): TypeElement {
-    return compilation.elements.getTypeElement(clazz.java.canonicalName)
-}
-
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
 fun main(args: Array<String>) {
     val interfaceClass = Class.forName(args[0]).kotlin
@@ -21,9 +13,14 @@ fun main(args: Array<String>) {
     val interfaceName = packageAndInterface.last()
     val className = "${interfaceName}Encoder"
     val lambdaTypeName = LambdaTypeName.get(parameters = *arrayOf(ByteArray::class.asClassName()), returnType = UNIT)
-    val classElement = getElement(interfaceClass)
-    val functions = methodsIn(classElement.enclosedElements).map {
-        FunSpec.overriding(it).build()
+    val functions = interfaceClass.declaredMemberFunctions.map { method ->
+        FunSpec.builder(method.name)
+            .addModifiers(KModifier.OVERRIDE)
+            .addParameters(method.valueParameters.map {
+                ParameterSpec.builder(it.name!!, it.type.jvmErasure).build()
+            })
+            .addCode("message(::${method.name}, %L)", method.valueParameters.joinToString { it.name!! })
+            .build()
     }
     val file = FileSpec.builder(packageName, className)
         .addType(
@@ -37,7 +34,7 @@ fun main(args: Array<String>) {
                         .build()
                 )
                 .addProperty(
-                    PropertySpec.builder("receiver", lambdaTypeName)
+                    PropertySpec.builder("receiver", lambdaTypeName, KModifier.PRIVATE)
                         .initializer("receiver")
                         .build()
                 )
