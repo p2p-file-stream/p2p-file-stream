@@ -8,5 +8,5 @@ interface SessionServer {
      *
      * fixme: add paramters
      */
-    fun response()
+    fun response(nickname: String, confirm: Boolean)
 }
