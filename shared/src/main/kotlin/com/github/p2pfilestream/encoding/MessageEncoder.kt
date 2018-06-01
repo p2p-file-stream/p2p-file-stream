@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvous
+package com.github.p2pfilestream.encoding
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KFunction

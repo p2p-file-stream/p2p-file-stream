@@ -3,6 +3,7 @@ package com.github.p2pfilestream.rendezvous
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.encoding.MessageDecoder
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat

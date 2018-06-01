@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvous
+package com.github.p2pfilestream.encoding
 
 data class WebSocketMessage(
     val type: String,

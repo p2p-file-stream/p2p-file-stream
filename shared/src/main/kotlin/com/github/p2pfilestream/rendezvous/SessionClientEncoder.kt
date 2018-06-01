@@ -1,6 +1,7 @@
 package com.github.p2pfilestream.rendezvous
 
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.encoding.MessageEncoder
 
 class SessionClientEncoder(receiver: (ByteArray) -> Unit) : SessionClient, MessageEncoder(receiver) {
 
