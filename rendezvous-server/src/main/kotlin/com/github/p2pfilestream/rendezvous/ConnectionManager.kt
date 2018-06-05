@@ -7,25 +7,35 @@ class ConnectionManager {
     companion object : KLogging()
 
     /** Maps nicknames to sessions */
-    private val sessions = HashMap<String, Session>()
+    private val sessions = HashMap<String, SessionService>()
 
     /** Maps nicknames of sender to request */
     private val requests = HashSet<ChatRequest>()
 
     fun connect(client: SessionClient, device: Device): SessionServer {
-        val session = Session(client, device)
+        val session = SessionService(client, device)
         sessions[device.nickname] = session
-        return SessionService(session)
+        return session
     }
 
     fun disconnect(nickname: String) {
-        sessions.remove(nickname)
+        //fixme: Improve readability of this function
+        sessions.remove(nickname)?.let { session ->
+            // Delete requests with session as sender
+            requests.filter { it.sender == session }.forEach {
+                it.receiver.client.deleteRequest(session.device.nickname)
+            }
+            // Decline requests with session as receiver
+            requests.filter { it.receiver == session }.forEach {
+                it.sender.client.declined(SessionClient.ResponseError.DISCONNECTED)
+            }
+        } ?: logger.info { "Session to disconnect not found" }
     }
 
-    private inner class SessionService(session: Session) : SessionServer {
-        private val client = session.client
-        private val device = session.device
-
+    private inner class SessionService(
+        val client: SessionClient,
+        val device: Device
+    ) : SessionServer {
         override fun request(nickname: String) {
             val other = sessions[nickname]
             if (other == null) {
@@ -34,33 +44,37 @@ class ConnectionManager {
             } else {
                 // Do request
                 other.client.request(device)
-                //requests.add(ChatRequest(this))
+                requests.add(ChatRequest(this, other))
             }
         }
 
         override fun response(nickname: String, confirm: Boolean) {
-            val other = sessions[nickname]
-            if (other == null) {
+            val sender = sessions[nickname]
+            if (sender == null) {
                 // Nickname not found
-                client.deleteRequest(nickname)
+                logger.info { "Nickname not found in response()" }
                 return
             }
+            val request = ChatRequest(sender, this)
+            if (!requests.remove(request)) {
+                // Request not found
+                logger.info { "Request not found in response()" }
+                return
+            }
+            // Notify other client about response
+            val other = request.sender.client
             if (confirm) {
-                other.client.confirmed(device)
+                other.confirmed(device)
             } else {
-                other.client.declined(SessionClient.ResponseError.DECLINED)
+                other.declined(SessionClient.ResponseError.DECLINED)
             }
         }
 
     }
+
+    private data class ChatRequest(
+        val sender: SessionService,
+        val receiver: SessionService
+    )
 }
 
-data class ChatRequest(
-    val sender: Session,
-    val receiver: Session
-)
-
-data class Session(
-    val client: SessionClient,
-    val device: Device
-)
