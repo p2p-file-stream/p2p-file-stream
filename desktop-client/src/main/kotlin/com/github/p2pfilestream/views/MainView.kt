@@ -41,6 +41,10 @@ class Chat(
 )
 
 class SessionController : Controller() {
+    fun processResponse(response: String) {
+
+    }
+
     val nickname: String = "Jan2000"
     val username: String? = "Jan Jansen"
 }
