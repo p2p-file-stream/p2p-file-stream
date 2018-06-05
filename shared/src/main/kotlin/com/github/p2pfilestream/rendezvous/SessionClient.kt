@@ -6,8 +6,11 @@ interface SessionClient {
     /** Notify client about request */
     fun request(device: Device)
 
-    /** Send result of request back */
-    fun response(device: Device, success: Boolean, error: ResponseError)
+    /** Notify about confirmation */
+    fun confirmed(device: Device)
+
+    /** Request is declined */
+    fun declined(error: ResponseError)
 
     /** Delete request when other disconnected */
     fun deleteRequest(nickname: String)

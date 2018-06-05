@@ -4,6 +4,13 @@ import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.encoding.MessageEncoder
 
 class SessionClientEncoder(receiver: (ByteArray) -> Unit) : SessionClient, MessageEncoder(receiver) {
+    override fun confirmed(device: Device) {
+        message(::confirmed, device)
+    }
+
+    override fun declined(error: SessionClient.ResponseError) {
+        message(::declined, error)
+    }
 
     override fun deleteRequest(nickname: String) {
         message(::deleteRequest, nickname)
@@ -11,9 +18,5 @@ class SessionClientEncoder(receiver: (ByteArray) -> Unit) : SessionClient, Messa
 
     override fun request(device: Device) {
         message(::request, device)
-    }
-
-    override fun response(device: Device, success: Boolean, error: SessionClient.ResponseError) {
-        message(::response, device, success, error)
     }
 }

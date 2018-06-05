@@ -53,6 +53,11 @@
             <version>1.7.15</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging</artifactId>
+            <version>1.5.4</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

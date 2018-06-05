@@ -28,7 +28,7 @@ class SessionClientEncoderTest {
     @Test
     fun response() {
         val device = Device("Henk", Account("Piet", 3), 4)
-        encoder.response(device, false, SessionClient.ResponseError.DISCONNECTED)
-        verify { mock.response(device, false, SessionClient.ResponseError.DISCONNECTED) }
+        encoder.confirmed(device, false, SessionClient.ResponseError.DISCONNECTED)
+        verify { mock.confirmed(device, false, SessionClient.ResponseError.DISCONNECTED) }
     }
 }
