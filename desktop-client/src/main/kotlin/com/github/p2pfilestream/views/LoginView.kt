@@ -27,7 +27,8 @@ class LoginView : View() {
     init {
         val (verifier, challenge) = generateChallenge().apply { println(this) }
         root.engine.load(
-            "$baseURL/authorize?scope=openid%20email&response_type=code&client_id=$clientId&" +
+            "$baseURL/authorize?scope=openid%20email%20offline_access&response_type=code&" +
+                    "client_id=$clientId&audience=nickname-server&" +
                     "code_challenge=$challenge&code_challenge_method=S256&" +
                     "redirect_uri=$baseURL/mobile"
         )

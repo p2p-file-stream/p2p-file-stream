@@ -1,6 +1,8 @@
 package com.github.p2pfilestream.accountserver
 
 import com.github.p2pfilestream.Device
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -53,8 +55,12 @@ class DeviceController(val repository: DeviceRepository) {
 
         constructor(device: Device) {
             success = true
-            jwt = "JWT TODO" //TODO jwt
+            jwt = Jwts.builder()
+                .setSubject(device.nickname)
+                .signWith(SignatureAlgorithm.HS512, "MySecret")
+                .compact()
             error = null
         }
+
     }
 }
