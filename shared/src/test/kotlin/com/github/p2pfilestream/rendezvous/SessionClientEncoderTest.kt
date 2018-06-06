@@ -31,8 +31,8 @@ class SessionClientEncoderTest {
     @Test
     fun response() {
         val device = Device("Henk", Account("Piet", 3), 4)
-        encoder.confirmed(device)
-        verify { mock.confirmed(device) }
+        encoder.startChat(device, 1234)
+        verify { mock.startChat(device, 1234) }
     }
 
     @Test

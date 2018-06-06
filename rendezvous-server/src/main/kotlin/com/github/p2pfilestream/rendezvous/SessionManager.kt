@@ -2,6 +2,7 @@ package com.github.p2pfilestream.rendezvous
 
 import com.github.p2pfilestream.Device
 import mu.KLogging
+import java.util.*
 
 class SessionManager {
     companion object : KLogging()
@@ -12,6 +13,8 @@ class SessionManager {
     /** Maps nicknames of sender to request */
     private val requests = HashSet<ChatRequest>()
 
+    private val random = Random()
+
     fun connect(client: SessionClient, device: Device): SessionServer {
         val session = SessionService(client, device)
         sessions[device.nickname] = session
@@ -19,17 +22,19 @@ class SessionManager {
     }
 
     fun disconnect(nickname: String) {
-        //fixme: Improve readability of this function
-        sessions.remove(nickname)?.let { session ->
-            // Delete requests with session as sender
-            requests.filter { it.sender == session.client }.forEach {
-                it.receiver.deleteRequest(session.device.nickname)
-            }
-            // Decline requests with session as receiver
-            requests.filter { it.receiver == session.client }.forEach {
-                it.sender.declined(SessionClient.ResponseError.DISCONNECTED)
-            }
-        } ?: logger.info { "Session to disconnect not found" }
+        val session = sessions.remove(nickname)
+        if (session == null) {
+            logger.info { "Session to disconnect not found" }
+            return
+        }
+        // Delete requests with session as sender
+        requests.filter { it.sender == session.client }.forEach {
+            it.receiver.deleteRequest(session.device.nickname)
+        }
+        // Decline requests with session as receiver
+        requests.filter { it.receiver == session.client }.forEach {
+            it.sender.declined(SessionClient.ResponseError.DISCONNECTED)
+        }
     }
 
     private inner class SessionService(
@@ -61,10 +66,13 @@ class SessionManager {
                 logger.info { "Request not found in response()" }
                 return
             }
-            // Notify other client about response
             val other = request.sender
+            // Handle response
             if (confirm) {
-                other.confirmed(device)
+                // Generate chatId
+                val chatId = random.nextLong()
+                other.startChat(device, chatId)
+                client.startChat(device, chatId)
             } else {
                 other.declined(SessionClient.ResponseError.DECLINED)
             }

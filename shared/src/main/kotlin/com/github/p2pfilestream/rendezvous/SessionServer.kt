@@ -4,9 +4,6 @@ interface SessionServer {
     /** Send request to server */
     fun request(nickname: String)
 
-    /** Respond to request
-     *
-     * fixme: add paramters
-     */
+    /** Respond to request */
     fun response(nickname: String, confirm: Boolean)
 }

@@ -12,12 +12,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 @Component
 class SessionSocketHandler : TextWebSocketHandler() {
     private val decoders = HashMap<WebSocketSession, MessageDecoder<SessionServer>>()
-    private val connectionManager = SessionManager()
+    private val sessionManager = SessionManager()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val device = getDevice(session)
         val client: SessionClient = MessageEncoder.create { session.sendMessage(TextMessage(it)) }
-        val service = connectionManager.connect(client, device)
+        val service = sessionManager.connect(client, device)
         val messageDecoder = MessageDecoder(service)
         decoders[session] = messageDecoder
     }
@@ -27,7 +27,7 @@ class SessionSocketHandler : TextWebSocketHandler() {
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        connectionManager.disconnect(getDevice(session).nickname)
+        sessionManager.disconnect(getDevice(session).nickname)
         decoders.remove(session)
     }
 

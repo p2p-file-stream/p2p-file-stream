@@ -3,11 +3,11 @@ package com.github.p2pfilestream.rendezvous
 import com.github.p2pfilestream.Device
 
 interface SessionClient {
-    /** Notify client about request */
+    /** Notify client about new request to him */
     fun request(device: Device)
 
-    /** Notify about confirmation */
-    fun confirmed(device: Device)
+    /** The chat is started, both clients receive this */
+    fun startChat(device: Device, chatId: Long)
 
     /** Request is declined */
     fun declined(error: ResponseError)
