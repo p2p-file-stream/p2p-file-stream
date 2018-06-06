@@ -7,6 +7,8 @@ import com.github.p2pfilestream.encoding.MessageEncoder
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class SessionClientEncoderTest {
     private val encoder = MessageEncoder.create<SessionClient> { decoder.decode(it) }
@@ -31,5 +33,18 @@ class SessionClientEncoderTest {
         val device = Device("Henk", Account("Piet", 3), 4)
         encoder.confirmed(device)
         verify { mock.confirmed(device) }
+    }
+
+    @Test
+    fun `Call hashCode() on proxy`() {
+        val a = MessageEncoder.create<SessionClient> { }
+        val b = MessageEncoder.create<SessionClient> { }
+        assertNotEquals(a.hashCode(), b.hashCode())
+        assertEquals(a.hashCode(), a.hashCode())
+    }
+
+    @Test
+    internal fun `Call toString() on proxy`() {
+        println(encoder.toString())
     }
 }
