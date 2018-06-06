@@ -3,7 +3,7 @@ package com.github.p2pfilestream.rendezvous
 import com.github.p2pfilestream.Device
 import mu.KLogging
 
-class ConnectionManager {
+class SessionManager {
     companion object : KLogging()
 
     /** Maps nicknames to sessions */
@@ -22,12 +22,12 @@ class ConnectionManager {
         //fixme: Improve readability of this function
         sessions.remove(nickname)?.let { session ->
             // Delete requests with session as sender
-            requests.filter { it.sender == session }.forEach {
-                it.receiver.client.deleteRequest(session.device.nickname)
+            requests.filter { it.sender == session.client }.forEach {
+                it.receiver.deleteRequest(session.device.nickname)
             }
             // Decline requests with session as receiver
-            requests.filter { it.receiver == session }.forEach {
-                it.sender.client.declined(SessionClient.ResponseError.DISCONNECTED)
+            requests.filter { it.receiver == session.client }.forEach {
+                it.sender.declined(SessionClient.ResponseError.DISCONNECTED)
             }
         } ?: logger.info { "Session to disconnect not found" }
     }
@@ -44,7 +44,7 @@ class ConnectionManager {
             } else {
                 // Do request
                 other.client.request(device)
-                requests.add(ChatRequest(this, other))
+                requests.add(ChatRequest(client, other.client))
             }
         }
 
@@ -55,26 +55,25 @@ class ConnectionManager {
                 logger.info { "Nickname not found in response()" }
                 return
             }
-            val request = ChatRequest(sender, this)
+            val request = ChatRequest(sender.client, client)
             if (!requests.remove(request)) {
                 // Request not found
                 logger.info { "Request not found in response()" }
                 return
             }
             // Notify other client about response
-            val other = request.sender.client
+            val other = request.sender
             if (confirm) {
                 other.confirmed(device)
             } else {
                 other.declined(SessionClient.ResponseError.DECLINED)
             }
         }
-
     }
 
     private data class ChatRequest(
-        val sender: SessionService,
-        val receiver: SessionService
+        val sender: SessionClient,
+        val receiver: SessionClient
     )
 }
 

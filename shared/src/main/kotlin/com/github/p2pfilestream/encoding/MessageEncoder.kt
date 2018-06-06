@@ -11,9 +11,9 @@ import kotlin.reflect.jvm.javaMethod
 object MessageEncoder {
     val mapper = jacksonObjectMapper()
 
-    inline fun <reified T : Any> create(noinline callback: (ByteArray) -> Unit): T {
+    inline fun <reified T : Any> of(noinline receiver: (ByteArray) -> Unit): T {
         val implementation = proxy(T::class) {
-            callback(mapper.writeValueAsBytes(it))
+            receiver(mapper.writeValueAsBytes(it))
         }
         if (implementation !is T) {
             throw IllegalArgumentException()
@@ -21,7 +21,7 @@ object MessageEncoder {
         return implementation
     }
 
-    fun <T : Any> proxy(kClass: KClass<T>, callback: (WebSocketMessage) -> Unit): Any {
+    fun <T : Any> proxy(kClass: KClass<T>, receiver: (WebSocketMessage) -> Unit): Any {
         val e = Enhancer()
         e.setInterfaces(arrayOf(kClass.java))
         val hash = e.hashCode()
@@ -29,7 +29,7 @@ object MessageEncoder {
             return@MethodInterceptor when (method) {
                 Any::toString.javaMethod -> "MessageEncoder proxy"
                 Any::hashCode.javaMethod -> hash
-                else -> callback(WebSocketMessage(method.name, args.toList()))
+                else -> receiver(WebSocketMessage(method.name, args.toList()))
             }
         })
         return e.create()

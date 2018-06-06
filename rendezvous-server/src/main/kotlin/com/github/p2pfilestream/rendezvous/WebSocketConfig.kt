@@ -7,9 +7,14 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-class WebSocketConfig(val socketHandler: SocketHandler) : WebSocketConfigurer {
+class WebSocketConfig(
+    private val sessionSocketHandler: SessionSocketHandler,
+    private val relaySocketHandler: RelaySocketHandler
+) : WebSocketConfigurer {
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(socketHandler, "/ws")
+        registry.addHandler(sessionSocketHandler, "/session")
+            .setAllowedOrigins("*")
+        registry.addHandler(relaySocketHandler, "/relay")
             .setAllowedOrigins("*")
     }
 }

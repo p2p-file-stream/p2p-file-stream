@@ -2,6 +2,7 @@ package com.github.p2pfilestream.rendezvous
 
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.encoding.MessageDecoder
+import com.github.p2pfilestream.encoding.MessageEncoder
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
@@ -9,17 +10,15 @@ import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 
 @Component
-class SocketHandler : TextWebSocketHandler() {
+class SessionSocketHandler : TextWebSocketHandler() {
     private val decoders = HashMap<WebSocketSession, MessageDecoder<SessionServer>>()
-    private val clients = HashMap<WebSocketSession, SessionClient>()
-    private val connectionManager = ConnectionManager()
+    private val connectionManager = SessionManager()
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val device = getDevice(session)
-        val client = SessionClientEncoder { session.sendMessage(TextMessage(it)) }
+        val client: SessionClient = MessageEncoder.of { session.sendMessage(TextMessage(it)) }
         val service = connectionManager.connect(client, device)
-        val messageDecoder = MessageDecoder<SessionServer>(service)
-        clients[session] = client
+        val messageDecoder = MessageDecoder(service)
         decoders[session] = messageDecoder
     }
 
@@ -27,8 +26,8 @@ class SocketHandler : TextWebSocketHandler() {
         decoders[session]?.decode(message.asBytes())
     }
 
-    override fun afterConnectionClosed(session: WebSocketSession?, status: CloseStatus?) {
-        clients.remove(session)?.let(connectionManager::disconnect)
+    override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
+        connectionManager.disconnect(getDevice(session).nickname)
         decoders.remove(session)
     }
 
