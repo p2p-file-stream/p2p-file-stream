@@ -1,9 +1,9 @@
 package com.github.p2pfilestream.rendezvous
 
 import com.github.p2pfilestream.Device
-import com.github.p2pfilestream.encoding.MessageEncoder
+import com.github.p2pfilestream.encoding.OldMessageEncoder
 
-class SessionClientEncoder(receiver: (ByteArray) -> Unit) : SessionClient, MessageEncoder(receiver) {
+class SessionClientEncoder(receiver: (ByteArray) -> Unit) : SessionClient, OldMessageEncoder(receiver) {
     override fun confirmed(device: Device) {
         message(::confirmed, device)
     }

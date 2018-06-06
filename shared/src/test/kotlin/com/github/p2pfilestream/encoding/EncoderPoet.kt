@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
         .addType(
             TypeSpec.classBuilder(className)
                 .addSuperinterface(interfaceClass)
-                .superclass(MessageEncoder::class)
+                .superclass(OldMessageEncoder::class)
                 .addSuperclassConstructorParameter("receiver")
                 .primaryConstructor(
                     FunSpec.constructorBuilder()

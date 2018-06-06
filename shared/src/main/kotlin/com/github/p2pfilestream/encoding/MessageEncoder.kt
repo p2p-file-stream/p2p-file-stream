@@ -1,13 +1,29 @@
 package com.github.p2pfilestream.encoding
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kotlin.reflect.KFunction
+import net.sf.cglib.proxy.Enhancer
+import net.sf.cglib.proxy.MethodInterceptor
+import kotlin.reflect.KClass
 
-abstract class MessageEncoder(private val receiver: (ByteArray) -> Unit) {
-    private val mapper = jacksonObjectMapper()
 
-    protected fun message(type: KFunction<*>, vararg elements: Any) {
-        val message = WebSocketMessage(type.name, elements.asList())
-        receiver(mapper.writeValueAsBytes(message))
+/** Translates a call on an interface to a JSON-message */
+object MessageEncoder {
+    inline fun <reified T : Any> proxy(noinline callback: (WebSocketMessage) -> Unit): T {
+        return Encoder(T::class, callback).proxy as T
+    }
+
+    class Encoder(
+        private val kClass: KClass<out Any>,
+        private val callback: (WebSocketMessage) -> Unit
+    ) {
+        val proxy: Any
+
+        init {
+            val e = Enhancer()
+            e.setInterfaces(arrayOf(kClass.java))
+            e.setCallback(MethodInterceptor { target, method, args, proxy ->
+                callback(WebSocketMessage(method.name, args.toList()))
+            })
+            proxy = e.create()
+        }
     }
 }
