@@ -3,12 +3,13 @@ package com.github.p2pfilestream.rendezvous
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.encoding.MessageDecoder
+import com.github.p2pfilestream.encoding.MessageEncoder
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class SessionClientEncoderTest {
-    private val encoder = SessionClientEncoder { decoder.decode(it) }
+    private val encoder = MessageEncoder.create<SessionClient> { decoder.decode(it) }
     private val mock = mockk<SessionClient>(relaxed = true)
     private val decoder = MessageDecoder(mock)
 
@@ -28,7 +29,7 @@ class SessionClientEncoderTest {
     @Test
     fun response() {
         val device = Device("Henk", Account("Piet", 3), 4)
-        encoder.confirmed(device, false, SessionClient.ResponseError.DISCONNECTED)
-        verify { mock.confirmed(device, false, SessionClient.ResponseError.DISCONNECTED) }
+        encoder.confirmed(device)
+        verify { mock.confirmed(device) }
     }
 }
