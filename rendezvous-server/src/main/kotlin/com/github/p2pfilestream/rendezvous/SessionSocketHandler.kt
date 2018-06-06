@@ -16,7 +16,7 @@ class SessionSocketHandler : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val device = getDevice(session)
-        val client: SessionClient = MessageEncoder.of { session.sendMessage(TextMessage(it)) }
+        val client: SessionClient = MessageEncoder.create { session.sendMessage(TextMessage(it)) }
         val service = connectionManager.connect(client, device)
         val messageDecoder = MessageDecoder(service)
         decoders[session] = messageDecoder

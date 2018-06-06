@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class SessionClientEncoderTest {
-    private val encoder = MessageEncoder.of<SessionClient> { decoder.decode(it) }
+    private val encoder = MessageEncoder.create<SessionClient> { decoder.decode(it) }
     private val mock = mockk<SessionClient>(relaxed = true)
     private val decoder = MessageDecoder(mock)
 
@@ -37,8 +37,8 @@ class SessionClientEncoderTest {
 
     @Test
     fun `Call hashCode() on proxy`() {
-        val a = MessageEncoder.of<SessionClient> { }
-        val b = MessageEncoder.of<SessionClient> { }
+        val a = MessageEncoder.create<SessionClient> { }
+        val b = MessageEncoder.create<SessionClient> { }
         assertNotEquals(a.hashCode(), b.hashCode())
         assertEquals(a.hashCode(), a.hashCode())
     }

@@ -1,32 +1,43 @@
 package com.github.p2pfilestream.rendezvous
 
-import com.github.p2pfilestream.chat.BinaryMessage
-import com.github.p2pfilestream.chat.BinaryMessageChunk
-import com.github.p2pfilestream.chat.ChatPeer
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 
-class RelayManager {
-    /** Clients waiting on a match */
-    val queue = HashSet<ChatPeer>()
+class RelayManager(
+    private val relayer: Relayer,
+    /** Timeout in seconds */
+    private val timeout: Int
+) {
+    /** Clients waiting on a match, keys are chat-ids */
+    private val clients = HashMap<Long, WaitingClient>()
 
-    fun connect(client: ChatPeer): RelayServer {
+    fun connect(client: RelayClient, chatId: Long) {
         // Find match
-        return RelayService()
+        val other = clients[chatId]?.relayClient
+        if (other == null) {
+            // not found -> put into queue
+            clients[chatId] = WaitingClient(client)
+        } else {
+            // connect them
+            relayer.relay(client, other)
+            clients.remove(chatId)
+        }
+        cleanup()
     }
 
-    private class RelayService : RelayServer {
-        override fun id(id: Int) {
-        }
-
-        override fun binary(binaryMessage: BinaryMessage) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun chunk(binaryMessageChunk: BinaryMessageChunk) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun text(textMessage: com.github.p2pfilestream.chat.TextMessage) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
+    /** Remove clients that are waiting for longer than the timeout */
+    private fun cleanup() {
+        clients.entries.removeIf { Duration.between(it.value.time, now()).seconds > timeout }
     }
+
+    fun disconnect(client: RelayClient) {
+        val id = clients.entries.first { it.value.relayClient == client }.key
+        clients.remove(id)
+    }
+
+    private data class WaitingClient(
+        val relayClient: RelayClient,
+        val time: LocalDateTime = now()
+    )
 }

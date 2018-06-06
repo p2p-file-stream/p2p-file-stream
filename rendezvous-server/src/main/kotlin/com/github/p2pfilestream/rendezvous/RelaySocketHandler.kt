@@ -10,13 +10,14 @@ import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 
 @Component
-class RelaySocketHandler : TextWebSocketHandler() {
-    private val decoders = HashMap<WebSocketSession, MessageDecoder<RelayServer>>()
-    private val relayManager = RelayManager()
+class RelaySocketHandler : TextWebSocketHandler(), Relayer {
+    private val decoders = HashMap<WebSocketSession, MessageDecoder<*>>()
+    private val waitingClients = HashMap<WebSocketSession, RelayClient>()
+    private val relayManager by lazy { RelayManager(this, 60) }
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val chatPeer: ChatPeer =
-            MessageEncoder.of {
+            MessageEncoder.create {
                 session.sendMessage(
                     TextMessage(it)
                 )
@@ -26,9 +27,35 @@ class RelaySocketHandler : TextWebSocketHandler() {
                 session.close(CloseStatus(1000, reason))
             }
         }
-        val service = relayManager.connect(client)
+        val chatId = 0L // todo
+        val service = relayManager.connect(client, chatId)
         val messageDecoder = MessageDecoder(service)
         decoders[session] = messageDecoder
+        waitingClients[session] = client;
+    }
+
+    override fun relay(a: RelayClient, b: RelayClient) {
+        val sessionA = detachClient(a)
+        val sessionB = detachClient(b)
+        if (sessionA == null || sessionB == null) {
+            // Disconnect them
+            a.disconnect()
+            b.disconnect()
+            return
+        }
+        decoders[sessionA] = MessageDecoder(b)
+        decoders[sessionB] = MessageDecoder(a)
+    }
+
+    /**
+     * Unfortunately there are no bidirectional hashmaps in Java or Kotlin.
+     */
+    private fun detachClient(client: RelayClient): WebSocketSession? {
+        val session = waitingClients.entries.firstOrNull { it.value == client }?.key
+        if (session != null) {
+            waitingClients.remove(session)
+        }
+        return session
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
@@ -36,7 +63,7 @@ class RelaySocketHandler : TextWebSocketHandler() {
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        relayManager.disconnect()
         decoders.remove(session)
+        waitingClients.remove(session)?.let(relayManager::disconnect)
     }
 }

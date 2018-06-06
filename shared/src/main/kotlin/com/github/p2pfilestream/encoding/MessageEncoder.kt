@@ -11,7 +11,7 @@ import kotlin.reflect.jvm.javaMethod
 object MessageEncoder {
     val mapper = jacksonObjectMapper()
 
-    inline fun <reified T : Any> of(noinline receiver: (ByteArray) -> Unit): T {
+    inline fun <reified T : Any> create(noinline receiver: (ByteArray) -> Unit): T {
         val implementation = proxy(T::class) {
             receiver(mapper.writeValueAsBytes(it))
         }
