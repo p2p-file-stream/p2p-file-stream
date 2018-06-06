@@ -1,12 +1,13 @@
 package com.github.p2pfilestream.rendezvous
 
 import com.github.p2pfilestream.encoding.MessageDecoder
+import com.github.p2pfilestream.encoding.MessageEncoder
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class SessionServerEncoderTest {
-    private val encoder = SessionServerEncoder { decoder.decode(it) }
+    private val encoder = MessageEncoder.create<SessionServer> { decoder.decode(it) }
     private val mock = mockk<SessionServer>(relaxed = true)
     private val decoder = MessageDecoder(mock)
 
