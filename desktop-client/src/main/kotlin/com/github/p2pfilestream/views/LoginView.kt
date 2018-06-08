@@ -61,12 +61,12 @@ private fun generateChallenge(): Auth0Challenge {
     val sr = SecureRandom()
     val code = ByteArray(32)
     sr.nextBytes(code)
-    val verifier = Base64.encodeBase64URLSafeString(code);
+    val verifier = Base64.encodeBase64URLSafeString(code)
     val bytes = verifier.toByteArray(Charset.defaultCharset())
-    val md = MessageDigest.getInstance("SHA-256");
-    md.update(bytes);
-    val digest = md.digest();
-    val challenge = Base64.encodeBase64URLSafeString(digest);
+    val md = MessageDigest.getInstance("SHA-256")
+    md.update(bytes)
+    val digest = md.digest()
+    val challenge = Base64.encodeBase64URLSafeString(digest)
     return Auth0Challenge(verifier, challenge)
 }
 
@@ -74,6 +74,7 @@ private data class Auth0Challenge(val verifier: String, val challenge: String)
 
 private data class Auth0TokenResponse(
     val accessToken: String,
+    val idToken: String,
     val expiresIn: String,
     val tokenType: String
 )

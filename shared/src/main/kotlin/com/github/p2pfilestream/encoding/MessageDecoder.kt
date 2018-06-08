@@ -18,7 +18,7 @@ class MessageDecoder<T : Any>(
         val mapper = jacksonObjectMapper()
         val message = mapper.readTree(bytes)
         val type = message[WebSocketMessage::type.name].asText()
-        val jsonArguments = message[WebSocketMessage::arguments.name];
+        val jsonArguments = message[WebSocketMessage::arguments.name]
         // Find the method with name specified in type
         val function = types[type] ?: throw IllegalArgumentException("Type not found")
         // Parse the arguments to the right types

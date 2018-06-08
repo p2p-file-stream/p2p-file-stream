@@ -23,14 +23,14 @@ class SessionClientEncoderTest {
 
     @Test
     fun request() {
-        val device = Device("Henk", Account("Piet", 3), 4)
+        val device = Device("Henk", Account("Piet", "abcd"), 4)
         encoder.request(device)
         verify { mock.request(device) }
     }
 
     @Test
     fun response() {
-        val device = Device("Henk", Account("Piet", 3), 4)
+        val device = Device("Henk", Account("Piet", "abcd"), 4)
         encoder.startChat(device, 1234)
         verify { mock.startChat(device, 1234) }
     }

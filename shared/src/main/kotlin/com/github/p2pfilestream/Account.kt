@@ -1,14 +1,12 @@
 package com.github.p2pfilestream
 
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
 import javax.persistence.Id
 
 @Entity
 data class Account(
     /** username or e-mail */
     val username: String,
-
-    @Id @GeneratedValue
-    val id: Long = 0
+    @Id
+    val id: String
 )

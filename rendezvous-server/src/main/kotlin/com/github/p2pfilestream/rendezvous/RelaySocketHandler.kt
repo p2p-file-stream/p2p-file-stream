@@ -31,7 +31,7 @@ class RelaySocketHandler : TextWebSocketHandler(), Relayer {
         val service = relayManager.connect(client, chatId)
         val messageDecoder = MessageDecoder(service)
         decoders[session] = messageDecoder
-        waitingClients[session] = client;
+        waitingClients[session] = client
     }
 
     override fun relay(a: RelayClient, b: RelayClient) {
