@@ -1,11 +1,13 @@
 package com.github.p2pfilestream.views
 
 import com.auth0.jwk.UrlJwkProvider
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.accountserver.RegisterResponse
 import com.mashape.unirest.http.Unirest
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwsHeader
@@ -13,7 +15,10 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SigningKeyResolverAdapter
 import javafx.scene.control.Alert
 import org.apache.commons.codec.binary.Base64
+import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForObject
+import org.springframework.web.util.DefaultUriBuilderFactory
 import tornadofx.Controller
 import tornadofx.alert
 import java.nio.charset.Charset
@@ -26,16 +31,15 @@ class AccountController : Controller() {
     val username: String? = "Jan Jansen"
 
     private lateinit var account: Account
-    private lateinit var auth0Response: Auth0Response
 
-    private val restTemplate = RestTemplate()
+    private val restTemplate = RestTemplate().apply {
+        uriTemplateHandler = DefaultUriBuilderFactory("http://localhost:8080")
+    }
 
     private val objectMapper = jacksonObjectMapper()
 
     private val baseURL = "https://p2p-file-stream.eu.auth0.com"
     private val clientId = "XFRf3j_s8wJZy8UK7sb5a1rY2QW56wHe"
-
-    private val accountServerUrl = "http://localhost:8080"
 
     private val verifier: String
     private val challenge: String
@@ -74,7 +78,7 @@ class AccountController : Controller() {
             .body(data)
             .asString().body
         println("Auth0 response: ${body}")
-        auth0Response = objectMapper.readValue(body)
+        val auth0Response: Auth0Response = objectMapper.readValue(body)
         val idToken = Jwts.parser()
             .setSigningKeyResolver(object : SigningKeyResolverAdapter() {
                 override fun resolveSigningKey(header: JwsHeader<*>, claims: Claims): Key {
@@ -86,6 +90,14 @@ class AccountController : Controller() {
             .parseClaimsJws(auth0Response.idToken).body
         val email = idToken["email"] as String
         account = Account(email, idToken.subject)
+        addAuthorizationInterceptor(auth0Response.accessToken)
+    }
+
+    private fun addAuthorizationInterceptor(bearer: String) {
+        restTemplate.interceptors.add(ClientHttpRequestInterceptor { r, b, e ->
+            r.headers.add("Authorization", "Bearer ${bearer}")
+            e.execute(r, b);
+        })
     }
 
     private fun generateChallenge(): Auth0Challenge {
@@ -103,21 +115,29 @@ class AccountController : Controller() {
 
     fun chooseNickname(nickname: String) {
         val device = Device(nickname, account)
-        Unirest.post("$accountServerUrl/nickname")
-            .header("Authorization", "Bearer ${auth0Response.accessToken}")
-            .body(objectMapper.writeValueAsBytes(device))
+        try {
+            //val response: RegisterResponse? = restTemplate.postForObject("/nickname", device)
+            val result: String? = restTemplate.postForObject("/nickname", device)
+            val response: RegisterResponse? = objectMapper.readValue(result!!)
+            if (response != null) {
+                println("Nickname response: $response")
+            }
+        } catch (e: Exception) {
+            println(e)
+        }
     }
 }
 
 private data class Auth0Challenge(val verifier: String, val challenge: String)
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 private data class Auth0Response(
-    @JsonProperty("access-token")
+    @JsonProperty("access_token")
     val accessToken: String,
-    @JsonProperty("id-token")
+    @JsonProperty("id_token")
     val idToken: String,
-    @JsonProperty("expires-in")
+    @JsonProperty("expires_in")
     val expiresIn: String,
-    @JsonProperty("token-type")
+    @JsonProperty("token_type")
     val tokenType: String
 )

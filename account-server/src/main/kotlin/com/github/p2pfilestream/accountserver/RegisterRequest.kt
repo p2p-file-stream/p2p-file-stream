@@ -2,8 +2,6 @@ package com.github.p2pfilestream.accountserver
 
 import com.github.p2pfilestream.Device
 
-class RegisterRequestException(message: String) : Exception(message)
-
 class RegisterRequest(
     val device: Device
 ) {

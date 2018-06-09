@@ -10,8 +10,8 @@ class MainView : View("P2P File Stream") {
 
     init {
         chats.addAll(
-            Chat(Device("MyFriend", null, 123)),
-            Chat(Device("AnotherFriend", null, 321))
+//            Chat(Device("MyFriend", null, 123)),
+//            Chat(Device("AnotherFriend", null, 321))
         )
     }
 
