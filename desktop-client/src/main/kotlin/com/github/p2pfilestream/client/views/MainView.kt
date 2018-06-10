@@ -1,8 +1,9 @@
 package com.github.p2pfilestream.client.views
 
-import com.github.p2pfilestream.Account
-import com.github.p2pfilestream.Device
-import com.github.p2pfilestream.client.*
+import com.github.p2pfilestream.client.AccountController
+import com.github.p2pfilestream.client.ChatModel
+import com.github.p2pfilestream.client.SessionController
+import com.github.p2pfilestream.client.Styles
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -11,17 +12,10 @@ import java.time.format.DateTimeFormatter
 class MainView : View("P2P File Stream") {
     private val accountController: AccountController by inject()
     private val sessionController: SessionController by inject()
-    private val chats = mutableListOf<Chat>().observable()
+    private val chats = sessionController.chats
     private val currentChat: ChatModel by inject()
 
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-    init {
-        chats.addAll(
-            Chat(Device("MyFriend", Account("e@mail", "a"), 123)),
-            Chat(Device("AnotherFriend", Account("mail@me", "b"), 321))
-        )
-    }
 
     override val root = gridpane {
         row {

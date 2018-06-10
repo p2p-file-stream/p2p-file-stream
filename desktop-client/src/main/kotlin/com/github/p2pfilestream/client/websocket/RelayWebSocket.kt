@@ -1,43 +1,41 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.websocket
 
+import com.github.p2pfilestream.chat.ChatPeer
 import com.github.p2pfilestream.encoding.MessageDecoder
 import com.github.p2pfilestream.encoding.MessageEncoder
-import com.github.p2pfilestream.rendezvous.SessionClient
-import com.github.p2pfilestream.rendezvous.SessionServer
 import mu.KLogging
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.client.WebSocketConnectionManager
-import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.handler.TextWebSocketHandler
 
-class SessionWebSocket(
-    private val sessionClient: SessionController.Receiver
+class RelayWebSocket(
+    rendezvousServer: RendezvousServer,
+    private val connected: (ChatPeer) -> ChatPeer
 ) : TextWebSocketHandler() {
     companion object : KLogging()
 
-    private lateinit var session: WebSocketSession
     private val manager: WebSocketConnectionManager
-    private val decode = MessageDecoder<SessionClient>(sessionClient)
+    private lateinit var session: WebSocketSession
+    private lateinit var decode: MessageDecoder<ChatPeer>
 
     init {
-        val client = StandardWebSocketClient()
-        val url = "http://localhost:8087"
-        manager = WebSocketConnectionManager(client, this, url)
+        manager = rendezvousServer.connect("relay", this)
         manager.start()
-        logger.info { "Connecting to WebSocket" }
+        SessionWebSocket.logger.info { "Connecting to WebSocket" }
     }
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         logger.info { "WebSocket connection established" }
         this.session = session
-        val sessionServer: SessionServer = MessageEncoder.create {
+        val other: ChatPeer = MessageEncoder.create {
             if (session.isOpen) {
                 session.sendMessage(TextMessage(it))
             }
         }
-        sessionClient.connectionEstablished(sessionServer)
+        val chatClient = connected(other)
+        decode = MessageDecoder(chatClient)
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {

@@ -2,9 +2,9 @@ package com.github.p2pfilestream.client
 
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.chat.BinaryMessage
+import com.github.p2pfilestream.chat.BinaryMessageChunk
 import com.github.p2pfilestream.chat.ChatPeer
 import com.github.p2pfilestream.chat.TextMessage
-import com.github.p2pfilestream.encoding.MessageEncoder
 import javafx.collections.FXCollections
 import tornadofx.ItemViewModel
 import tornadofx.property
@@ -12,9 +12,9 @@ import java.io.File
 import java.time.LocalDateTime
 
 class Chat(
-    val device: Device
+    val device: Device,
+    private val chatPeer: ChatPeer
 ) : ChatController {
-    private val chatPeer: ChatPeer = MessageEncoder.create { println(it) }
     val startProperty = property(LocalDateTime.now())
     var start by startProperty
     val chatMessages = FXCollections.observableArrayList<String>()
@@ -33,6 +33,22 @@ class Chat(
 
     override fun sendText(text: String) {
         chatPeer.text(TextMessage(nextMessageIndex(), text))
+
+    }
+
+    val receiver = object : ChatController.Receiver {
+        override fun text(textMessage: TextMessage) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun binary(binaryMessage: BinaryMessage) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun chunk(binaryMessageChunk: BinaryMessageChunk) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
     }
 }
 

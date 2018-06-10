@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.accountserver.RegisterRequestException
 import com.github.p2pfilestream.accountserver.RegisterResponse
 import com.mashape.unirest.http.Unirest
 import io.jsonwebtoken.Claims
@@ -113,15 +114,13 @@ class AccountController : Controller() {
         return Auth0Challenge(verifier, challenge)
     }
 
-    fun chooseNickname(nickname: String) {
+    fun chooseNickname(nickname: String): RegisterResponse {
         val device = Device(nickname, account)
-        try {
-            val response: RegisterResponse? = accountServer.postForObject("/nickname", device)
-            if (response != null) {
-                println("Nickname response: $response")
-            }
+        return try {
+            accountServer.postForObject("/nickname", device)!!
         } catch (e: Exception) {
             println(e)
+            RegisterResponse(RegisterRequestException(e.toString()))
         }
     }
 }

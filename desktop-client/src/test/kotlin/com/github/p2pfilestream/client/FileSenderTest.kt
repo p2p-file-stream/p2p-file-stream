@@ -1,6 +1,5 @@
-package com.github.p2pfilestream
+package com.github.p2pfilestream.client
 
-import com.github.p2pfilestream.client.FileSender
 import io.reactivex.Flowable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
