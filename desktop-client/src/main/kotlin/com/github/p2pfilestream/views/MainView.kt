@@ -21,14 +21,18 @@ class MainView : View("P2P File Stream") {
         )
     }
 
-    override val root = borderpane {
-        top {
+    override val root = gridpane {
+        row {
             hbox {
+                // Account-info top left
                 label(accountController.nickname)
                 label(accountController.username ?: "Anonymous")
             }
+            hbox {
+                label(currentChat.deviceProperty)
+            }
         }
-        left {
+        row {
             listview(chats) {
                 cellFormat {
                     graphic = hbox {
@@ -40,7 +44,7 @@ class MainView : View("P2P File Stream") {
                 }
                 bindSelected(currentChat)
             }
+            add(ChatView::class)
         }
-        center(ChatView::class)
     }
 }

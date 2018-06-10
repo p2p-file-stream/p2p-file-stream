@@ -11,6 +11,9 @@ class Styles : Stylesheet() {
     }
 
     init {
+        nickname {
+            fontSize = 1.5.em
+        }
         chatList {
             nickname {
                 fontSize = 1.3.em
