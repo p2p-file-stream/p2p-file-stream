@@ -9,7 +9,7 @@ class ChatView : View() {
     private val chatMessages = FXCollections.observableArrayList<String>()
 
     override val root = vbox {
-        label(currentChat.device)
+        label(currentChat.deviceProperty)
         listview(chatMessages)
         val messageTextArea = textarea {
             promptText = "Message"

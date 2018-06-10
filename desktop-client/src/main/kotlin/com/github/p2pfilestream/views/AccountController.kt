@@ -32,7 +32,7 @@ class AccountController : Controller() {
 
     private lateinit var account: Account
 
-    private val restTemplate = RestTemplate().apply {
+    private val accountServer = RestTemplate().apply {
         uriTemplateHandler = DefaultUriBuilderFactory("http://localhost:8080")
     }
 
@@ -94,7 +94,7 @@ class AccountController : Controller() {
     }
 
     private fun addAuthorizationInterceptor(bearer: String) {
-        restTemplate.interceptors.add(ClientHttpRequestInterceptor { r, b, e ->
+        accountServer.interceptors.add(ClientHttpRequestInterceptor { r, b, e ->
             r.headers.add("Authorization", "Bearer ${bearer}")
             e.execute(r, b);
         })
@@ -116,9 +116,7 @@ class AccountController : Controller() {
     fun chooseNickname(nickname: String) {
         val device = Device(nickname, account)
         try {
-            //val response: RegisterResponse? = restTemplate.postForObject("/nickname", device)
-            val result: String? = restTemplate.postForObject("/nickname", device)
-            val response: RegisterResponse? = objectMapper.readValue(result!!)
+            val response: RegisterResponse? = accountServer.postForObject("/nickname", device)
             if (response != null) {
                 println("Nickname response: $response")
             }

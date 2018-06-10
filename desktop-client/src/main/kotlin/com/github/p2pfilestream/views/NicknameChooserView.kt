@@ -17,6 +17,7 @@ class NicknameChooserView : View() {
                 action {
                     shortcut("Enter")
                     accountController.chooseNickname(input.value)
+                    replaceWith(MainView::class)
                 }
             }
         }
