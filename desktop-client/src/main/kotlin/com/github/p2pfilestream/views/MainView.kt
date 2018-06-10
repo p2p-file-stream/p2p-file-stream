@@ -2,9 +2,9 @@ package com.github.p2pfilestream.views
 
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.Styles
 import javafx.scene.layout.Priority
 import tornadofx.*
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class MainView : View("P2P File Stream") {
@@ -32,7 +32,8 @@ class MainView : View("P2P File Stream") {
             listview(chats) {
                 cellFormat {
                     graphic = hbox {
-                        label(it.nickname)
+                        addClass(Styles.chatList)
+                        label(it.device.nickname).addClass(Styles.nickname)
                         region { hgrow = Priority.ALWAYS }
                         label(it.start.format(timeFormatter))
                     }
@@ -43,19 +44,3 @@ class MainView : View("P2P File Stream") {
         center(ChatView::class)
     }
 }
-
-class ChatModel : ItemViewModel<Chat>() {
-    // val nickname get() = item?.device?.nickname.orEmpty()
-    val deviceProperty = bind(Chat::device)
-}
-
-class Chat(
-    val device: Device
-) {
-    val nicknameProperty = property(device.nickname)
-    var nickname by nicknameProperty
-
-    val startProperty = property(LocalDateTime.now())
-    var start by startProperty
-}
-
