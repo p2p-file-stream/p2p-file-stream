@@ -1,6 +1,6 @@
-package com.github.p2pfilestream
+package com.github.p2pfilestream.client
 
-import com.github.p2pfilestream.views.MainView
+import com.github.p2pfilestream.client.views.MainView
 import javafx.application.Application
 import tornadofx.App
 

@@ -10,11 +10,11 @@ import kotlin.reflect.jvm.javaType
  */
 class MessageDecoder<T : Any>(
     private val receiver: T
-) {
+) : (ByteArray) -> Unit {
     private val types = receiver::class
         .declaredFunctions.map { it.name to it }.toMap()
 
-    fun decode(bytes: ByteArray) {
+    override fun invoke(bytes: ByteArray) {
         val mapper = jacksonObjectMapper()
         val message = mapper.readTree(bytes)
         val type = message[WebSocketMessage::type.name].asText()

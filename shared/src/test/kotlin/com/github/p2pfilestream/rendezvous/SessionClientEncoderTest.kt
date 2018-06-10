@@ -11,9 +11,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class SessionClientEncoderTest {
-    private val encoder = MessageEncoder.create<SessionClient> { decoder.decode(it) }
+    private val encoder = MessageEncoder.create<SessionClient> { decode(it) }
     private val mock = mockk<SessionClient>(relaxed = true)
-    private val decoder = MessageDecoder(mock)
+    private val decode = MessageDecoder(mock)
 
     @Test
     fun deleteRequest() {

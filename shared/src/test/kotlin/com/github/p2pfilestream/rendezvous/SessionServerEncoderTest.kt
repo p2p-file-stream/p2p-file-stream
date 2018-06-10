@@ -7,9 +7,9 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class SessionServerEncoderTest {
-    private val encoder = MessageEncoder.create<SessionServer> { decoder.decode(it) }
+    private val encoder = MessageEncoder.create<SessionServer> { decode(it) }
     private val mock = mockk<SessionServer>(relaxed = true)
-    private val decoder = MessageDecoder(mock)
+    private val decode = MessageDecoder(mock)
 
     @Test
     fun request() {

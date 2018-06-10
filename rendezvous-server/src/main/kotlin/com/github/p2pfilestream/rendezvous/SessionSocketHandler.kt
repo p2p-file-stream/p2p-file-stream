@@ -23,7 +23,7 @@ class SessionSocketHandler : TextWebSocketHandler() {
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        decoders[session]?.decode(message.asBytes())
+        decoders[session]?.invoke(message.asBytes())
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {

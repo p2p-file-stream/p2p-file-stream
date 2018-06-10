@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.views
+package com.github.p2pfilestream.client
 
 import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -28,9 +28,9 @@ import java.security.SecureRandom
 
 class AccountController : Controller() {
     val nickname: String = "Jan2000"
-    val username: String? = "Jan Jansen"
+    val username: String = "Jan Jansen"
 
-    private lateinit var account: Account
+    lateinit var account: Account
 
     private val accountServer = RestTemplate().apply {
         uriTemplateHandler = DefaultUriBuilderFactory("http://localhost:8080")

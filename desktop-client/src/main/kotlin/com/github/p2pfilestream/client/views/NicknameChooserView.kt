@@ -1,5 +1,6 @@
-package com.github.p2pfilestream.views
+package com.github.p2pfilestream.client.views
 
+import com.github.p2pfilestream.client.AccountController
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 

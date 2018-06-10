@@ -1,5 +1,6 @@
-package com.github.p2pfilestream
+package com.github.p2pfilestream.client
 
+import javafx.scene.paint.Color
 import tornadofx.Stylesheet
 import tornadofx.cssclass
 import tornadofx.em
@@ -8,6 +9,7 @@ class Styles : Stylesheet() {
     companion object {
         val nickname by cssclass()
         val chatList by cssclass()
+        val header by cssclass()
     }
 
     init {
@@ -18,6 +20,9 @@ class Styles : Stylesheet() {
             nickname {
                 fontSize = 1.3.em
             }
+        }
+        header {
+            backgroundColor += Color.SKYBLUE
         }
     }
 }

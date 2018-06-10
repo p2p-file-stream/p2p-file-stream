@@ -1,4 +1,4 @@
-package com.github.p2pfilestream
+package com.github.p2pfilestream.client
 
 import com.github.p2pfilestream.chat.BinaryMessageChunk
 import java.io.InputStream
