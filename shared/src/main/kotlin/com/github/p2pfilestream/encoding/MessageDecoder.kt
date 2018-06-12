@@ -3,6 +3,7 @@ package com.github.p2pfilestream.encoding
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaType
 
 /**
@@ -28,6 +29,7 @@ class MessageDecoder<T : Any>(
             arguments[i] = mapper.readValue(mapper.treeAsTokens(jsonArguments[i]), javaType)
         }
         // Call the method
+        function.isAccessible = true
         function.call(receiver, *arguments)
     }
 }
