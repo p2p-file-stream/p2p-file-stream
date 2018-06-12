@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
 class SessionClientEncoderTest {
@@ -46,5 +47,14 @@ class SessionClientEncoderTest {
     @Test
     internal fun `Call toString() on proxy`() {
         println(encoder.toString())
+    }
+
+    @Test
+    fun `Call equals() on proxy`() {
+        val a = MessageEncoder.create<SessionClient> { }
+        val b = MessageEncoder.create<SessionClient> { }
+        assertNotEquals(a, b)
+        assertEquals(a, a)
+        assertFalse(a.equals(null))
     }
 }

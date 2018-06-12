@@ -25,10 +25,11 @@ object MessageEncoder {
         val e = Enhancer()
         e.setInterfaces(arrayOf(kClass.java))
         val hash = e.hashCode()
-        e.setCallback(MethodInterceptor { _, method, args, _ ->
+        e.setCallback(MethodInterceptor { obj, method, args, _ ->
             return@MethodInterceptor when (method) {
                 Any::toString.javaMethod -> "MessageEncoder proxy"
                 Any::hashCode.javaMethod -> hash
+                Any::equals.javaMethod -> obj === args[0]
                 else -> receiver(WebSocketMessage(method.name, args.toList()))
             }
         })
