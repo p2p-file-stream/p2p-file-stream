@@ -1,13 +1,19 @@
 package com.github.p2pfilestream.accountserver
 
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.accountserver.config.SECRET
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class DeviceController(val repository: DeviceRepository) {
+class DeviceController(
+    private val deviceRepository: DeviceRepository,
+    private val accountRepository: AccountRepository
+) {
 
     @PostMapping("/nickname")
     fun registerNickname(@RequestBody request: Device, authentication: Authentication): RegisterResponse {
@@ -21,7 +27,8 @@ class DeviceController(val repository: DeviceRepository) {
         } catch (e: RegisterRequestException) {
             return RegisterResponse(e)
         }
-        val device = repository.saveOrNull(request)
+        accountRepository.save(request.account)
+        val device = deviceRepository.saveOrNull(request)
         if (device == null) {
             return RegisterResponse(RegisterRequestException("Nickname already exists"))
         }

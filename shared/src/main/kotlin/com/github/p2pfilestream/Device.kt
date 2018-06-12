@@ -11,7 +11,7 @@ data class Device(
     @Column(unique = true)
     val nickname: String,
 
-    @ManyToOne(cascade = [CascadeType.PERSIST])
+    @ManyToOne
     val account: Account,
 
     @Id @GeneratedValue
