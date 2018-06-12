@@ -29,6 +29,11 @@
             <artifactId>spring-websocket</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.tyrus.bundles</groupId>
+            <artifactId>tyrus-standalone-client</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+        <dependency>
             <groupId>no.tornado</groupId>
             <artifactId>tornadofx</artifactId>
             <version>${tornadofx.version}</version>
