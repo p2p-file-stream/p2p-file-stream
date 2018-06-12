@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvous
+package com.github.p2pfilestream.rendezvous.relay
 
 import com.github.p2pfilestream.chat.ChatPeer
 import com.github.p2pfilestream.encoding.MessageDecoder
@@ -27,7 +27,10 @@ class RelaySocketHandler : TextWebSocketHandler(), Relayer {
                 session.close(CloseStatus(1000, reason))
             }
         }
-        val chatId = 0L // todo
+        val chatId = session.handshakeHeaders.getFirst("Chat-Id")?.toLong()
+        if (chatId == null) {
+            return
+        }
         val service = relayManager.connect(client, chatId)
         val messageDecoder = MessageDecoder(service)
         decoders[session] = messageDecoder

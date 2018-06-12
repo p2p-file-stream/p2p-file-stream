@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.rendezvous
+package com.github.p2pfilestream.rendezvous.relay
 
 import java.time.Duration
 import java.time.LocalDateTime

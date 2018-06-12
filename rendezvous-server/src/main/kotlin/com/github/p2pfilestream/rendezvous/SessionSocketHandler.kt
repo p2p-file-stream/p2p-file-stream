@@ -32,6 +32,7 @@ class SessionSocketHandler : TextWebSocketHandler() {
     }
 
     private fun getDevice(session: WebSocketSession): Device {
-        TODO()
+        @Suppress("CAST_NEVER_SUCCEEDS")
+        return session.principal as Device
     }
 }
