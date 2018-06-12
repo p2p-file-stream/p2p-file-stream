@@ -4,7 +4,9 @@ import com.github.p2pfilestream.Device
 import mu.KLogging
 import java.util.*
 
-class SessionManager {
+class SessionManager(
+    private val random: Random = Random()
+) {
     companion object : KLogging()
 
     /** Maps nicknames to sessions */
@@ -12,8 +14,6 @@ class SessionManager {
 
     /** Maps nicknames of sender to request */
     private val requests = HashSet<ChatRequest>()
-
-    private val random = Random()
 
     fun connect(client: SessionClient, device: Device): SessionServer {
         val session = SessionService(client, device)
