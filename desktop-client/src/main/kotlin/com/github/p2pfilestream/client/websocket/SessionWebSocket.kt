@@ -46,7 +46,7 @@ class SessionWebSocket(
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
         logger.info { "WebSocket disconnected, status: $status" }
-        // todo: Notify user
+        sessionClient.connectionClosed()
     }
 
     fun disconnect() {

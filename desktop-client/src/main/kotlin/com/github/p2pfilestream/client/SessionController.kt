@@ -6,14 +6,19 @@ import com.github.p2pfilestream.client.websocket.RendezvousServer
 import com.github.p2pfilestream.client.websocket.SessionWebSocket
 import com.github.p2pfilestream.rendezvous.SessionClient
 import com.github.p2pfilestream.rendezvous.SessionServer
+import javafx.application.Platform
+import javafx.scene.control.Alert
+import javafx.scene.control.ButtonType
 import mu.KLogging
 import tornadofx.Controller
+import tornadofx.alert
 import tornadofx.observable
 
 class SessionController : Controller() {
     private lateinit var sessionServer: SessionServer
     val chats = mutableListOf<Chat>().observable()
     private lateinit var rendezvousServer: RendezvousServer
+    private lateinit var receiver: Receiver
 
     /** Maps nicknames to requests */
     //val requests = HashMap<String, Request>()
@@ -29,9 +34,9 @@ class SessionController : Controller() {
      */
     fun login(jwt: String) {
         logger.info { "Login nickname JWT $jwt" }
-        val receiver = Receiver()
+        receiver = Receiver()
         rendezvousServer = RendezvousServer(jwt)
-        val webSocket = SessionWebSocket(receiver, rendezvousServer)
+        SessionWebSocket(receiver, rendezvousServer)
     }
 
     inner class Receiver : SessionClient {
@@ -40,9 +45,27 @@ class SessionController : Controller() {
             sessionServer = server
         }
 
+        fun connectionClosed() {
+            Platform.runLater {
+                alert(Alert.AlertType.ERROR, "SessionServer unexpectedly closed connection") {
+                    SessionWebSocket(receiver, rendezvousServer)
+                }
+            }
+        }
+
         override fun request(device: Device) {
             logger.info { "Got request from $device" }
-            sessionServer.response(device.nickname, true)
+            val confirm = ButtonType("Confirm")
+            val decline = ButtonType("Decline")
+            Platform.runLater {
+                alert(
+                    Alert.AlertType.CONFIRMATION,
+                    "${device.nickname} requested a chat with you",
+                    buttons = *arrayOf(confirm, decline)
+                ) {
+                    sessionServer.response(device.nickname, it == confirm)
+                }
+            }
         }
 
         override fun startChat(device: Device, chatId: Long) {
@@ -56,11 +79,17 @@ class SessionController : Controller() {
         }
 
         override fun declined(nickname: String, error: SessionClient.ResponseError) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Platform.runLater {
+                alert(
+                    Alert.AlertType.INFORMATION,
+                    "Could not connect you with $nickname",
+                    error.message
+                )
+            }
         }
 
         override fun deleteRequest(nickname: String) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            logger.info { "Delete request from ${nickname}" }
         }
     }
 }

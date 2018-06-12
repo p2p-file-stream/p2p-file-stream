@@ -33,12 +33,11 @@ class Chat(
 
     override fun sendText(text: String) {
         chatPeer.text(TextMessage(nextMessageIndex(), text))
-
     }
 
     val receiver = object : ChatController.Receiver {
         override fun text(textMessage: TextMessage) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            chatMessages.add(textMessage.payload)
         }
 
         override fun binary(binaryMessage: BinaryMessage) {
