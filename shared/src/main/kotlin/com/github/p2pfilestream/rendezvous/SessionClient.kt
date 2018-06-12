@@ -10,7 +10,7 @@ interface SessionClient {
     fun startChat(device: Device, chatId: Long)
 
     /** Request is declined */
-    fun declined(error: ResponseError)
+    fun declined(nickname: String, error: ResponseError)
 
     /** Delete request when other disconnected */
     fun deleteRequest(nickname: String)

@@ -55,7 +55,7 @@ class SessionController : Controller() {
             }
         }
 
-        override fun declined(error: SessionClient.ResponseError) {
+        override fun declined(nickname: String, error: SessionClient.ResponseError) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 

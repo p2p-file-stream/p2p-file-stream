@@ -33,7 +33,7 @@ class SessionManager {
         }
         // Decline requests with session as receiver
         requests.filter { it.receiver == session.client }.forEach {
-            it.sender.declined(SessionClient.ResponseError.DISCONNECTED)
+            it.sender.declined(nickname, SessionClient.ResponseError.DISCONNECTED)
         }
     }
 
@@ -45,7 +45,7 @@ class SessionManager {
             val other = sessions[nickname]
             if (other == null) {
                 // Nickname not found
-                client.declined(SessionClient.ResponseError.NOT_FOUND)
+                client.declined(nickname, SessionClient.ResponseError.NOT_FOUND)
             } else {
                 // Do request
                 other.client.request(device)
@@ -74,7 +74,7 @@ class SessionManager {
                 other.startChat(device, chatId)
                 client.startChat(device, chatId)
             } else {
-                other.declined(SessionClient.ResponseError.DECLINED)
+                other.declined(device.nickname, SessionClient.ResponseError.DECLINED)
             }
         }
     }
