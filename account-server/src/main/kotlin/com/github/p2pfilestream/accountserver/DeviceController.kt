@@ -32,7 +32,7 @@ class DeviceController(
         if (device == null) {
             return RegisterResponse(RegisterRequestException("Nickname already exists"))
         }
-        return RegisterResponse(device)
+        return RegisterResponse(generateJwt(device))
     }
 
     private fun validate(device: Device) {
@@ -43,4 +43,12 @@ class DeviceController(
                 throw RegisterRequestException("Nickname should contain at most 25 characters")
         }
     }
+
+    private fun generateJwt(device: Device) =
+        Jwts.builder()
+            .setSubject(device.nickname)
+            .claim("email", device.account.username)
+            .claim("account", device.account.id)
+            .signWith(SignatureAlgorithm.HS512, SECRET)
+            .compact()
 }
