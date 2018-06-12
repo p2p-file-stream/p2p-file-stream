@@ -3,6 +3,7 @@ package com.github.p2pfilestream.rendezvous
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.encoding.MessageDecoder
 import com.github.p2pfilestream.encoding.MessageEncoder
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
@@ -32,7 +33,7 @@ class SessionSocketHandler : TextWebSocketHandler() {
     }
 
     private fun getDevice(session: WebSocketSession): Device {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        return session.principal as Device
+        val token = session.principal as UsernamePasswordAuthenticationToken
+        return token.principal as Device
     }
 }
