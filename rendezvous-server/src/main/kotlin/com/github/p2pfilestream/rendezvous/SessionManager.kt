@@ -72,7 +72,7 @@ class SessionManager {
                 // Generate chatId
                 val chatId = random.nextLong()
                 other.startChat(device, chatId)
-                client.startChat(device, chatId)
+                client.startChat(sender.device, chatId)
             } else {
                 other.declined(device.nickname, SessionClient.ResponseError.DECLINED)
             }
