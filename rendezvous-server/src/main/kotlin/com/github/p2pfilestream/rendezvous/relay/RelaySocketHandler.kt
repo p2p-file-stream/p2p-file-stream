@@ -3,6 +3,7 @@ package com.github.p2pfilestream.rendezvous.relay
 import com.github.p2pfilestream.chat.ChatPeer
 import com.github.p2pfilestream.encoding.MessageDecoder
 import com.github.p2pfilestream.encoding.MessageEncoder
+import mu.KLogging
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
@@ -14,6 +15,8 @@ class RelaySocketHandler : TextWebSocketHandler(), Relayer {
     private val decoders = HashMap<WebSocketSession, MessageDecoder<*>>()
     private val waitingClients = HashMap<WebSocketSession, RelayClient>()
     private val relayManager by lazy { RelayManager(this, 60) }
+
+    private companion object : KLogging() {}
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         val chatPeer: ChatPeer =
@@ -44,6 +47,7 @@ class RelaySocketHandler : TextWebSocketHandler(), Relayer {
             // Disconnect them
             a.disconnect()
             b.disconnect()
+            logger.info { "Could not relay clients, was null" }
             return
         }
         decoders[sessionA] = MessageDecoder(b)

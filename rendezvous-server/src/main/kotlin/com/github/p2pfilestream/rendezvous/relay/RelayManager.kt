@@ -1,5 +1,6 @@
 package com.github.p2pfilestream.rendezvous.relay
 
+import mu.KLogging
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
@@ -12,14 +13,18 @@ class RelayManager(
     /** Clients waiting on a match, keys are chat-ids */
     private val clients = HashMap<Long, WaitingClient>()
 
+    private companion object : KLogging() {}
+
     fun connect(client: RelayClient, chatId: Long) {
         // Find match
         val other = clients[chatId]?.relayClient
         if (other == null) {
             // not found -> put into queue
             clients[chatId] = WaitingClient(client)
+            logger.info { "New client in queue, chatId: $chatId" }
         } else {
             // connect them
+            logger.info { "Found a match, chatId: $chatId" }
             relayer.relay(client, other)
             clients.remove(chatId)
         }
