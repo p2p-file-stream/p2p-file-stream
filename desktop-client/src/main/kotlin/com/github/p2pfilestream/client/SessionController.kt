@@ -28,6 +28,7 @@ class SessionController : Controller() {
      * Called when user has chosen a nickname
      */
     fun login(jwt: String) {
+        logger.info { "Login nickname JWT $jwt" }
         val receiver = Receiver()
         rendezvousServer = RendezvousServer(jwt)
         val webSocket = SessionWebSocket(receiver, rendezvousServer)
@@ -35,6 +36,7 @@ class SessionController : Controller() {
 
     inner class Receiver : SessionClient {
         fun connectionEstablished(server: SessionServer) {
+            logger.info { "Connected to Session Server" }
             sessionServer = server
         }
 
@@ -45,7 +47,8 @@ class SessionController : Controller() {
 
         override fun startChat(device: Device, chatId: Long) {
             logger.info { "Start a chat with $device; id: $chatId" }
-            RelayWebSocket(rendezvousServer) {
+            RelayWebSocket(chatId, rendezvousServer) {
+                logger.info { "Connected to Relay Server" }
                 val chat = Chat(device, it)
                 chats.add(chat)
                 chat.receiver
