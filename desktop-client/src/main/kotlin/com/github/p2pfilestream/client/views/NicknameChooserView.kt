@@ -2,11 +2,15 @@ package com.github.p2pfilestream.client.views
 
 import com.github.p2pfilestream.client.AccountController
 import com.github.p2pfilestream.client.SessionController
+import com.github.p2pfilestream.client.dal.DeviceStore
+import com.github.p2pfilestream.client.dal.PreferencesDeviceStore
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.Alert
 import tornadofx.*
 
-class NicknameChooserView : View() {
+class NicknameChooserView(
+    private val deviceStore: DeviceStore = PreferencesDeviceStore()
+) : View() {
     private val input = SimpleStringProperty()
     private val accountController: AccountController by inject()
     private val sessionController: SessionController by inject()
@@ -22,7 +26,9 @@ class NicknameChooserView : View() {
                     shortcut("Enter")
                     val response = accountController.chooseNickname(input.value)
                     if (response.success) {
-                        sessionController.login(response.jwt!!)
+                        val deviceJwt = response.jwt!!
+                        deviceStore.save(deviceJwt)
+                        sessionController.login(deviceJwt)
                         replaceWith(MainView::class)
                     } else {
                         alert(Alert.AlertType.ERROR, "Sorry", response.error)
