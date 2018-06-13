@@ -13,7 +13,7 @@ class DesktopApp : App(stylesheet = Styles::class) {
     override val primaryView: KClass<out UIComponent>
     private val sessionController: SessionController by inject()
 
-    private companion object : KLogging() {}
+    private companion object : KLogging()
 
     init {
         // Show login if not logged in

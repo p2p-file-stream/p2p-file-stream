@@ -5,7 +5,9 @@ import com.github.p2pfilestream.chat.BinaryMessage
 import com.github.p2pfilestream.chat.BinaryMessageChunk
 import com.github.p2pfilestream.chat.ChatPeer
 import com.github.p2pfilestream.chat.TextMessage
+import javafx.application.Platform
 import javafx.collections.FXCollections
+import mu.KLogging
 import tornadofx.ItemViewModel
 import tornadofx.property
 import java.io.File
@@ -18,6 +20,8 @@ class Chat(
     val startProperty = property(LocalDateTime.now())
     var start by startProperty
     val chatMessages = FXCollections.observableArrayList<String>()
+
+    private companion object : KLogging()
 
     private val fileProcessor = FileSender(chatPeer::chunk)
     private var messageCounter: Int = 1
@@ -32,12 +36,15 @@ class Chat(
     }
 
     override fun sendText(text: String) {
+        logger.info { "Send test $text" }
         chatPeer.text(TextMessage(nextMessageIndex(), text))
     }
 
     val receiver = object : ChatController.Receiver {
         override fun text(textMessage: TextMessage) {
-            chatMessages.add(textMessage.payload)
+            Platform.runLater {
+                chatMessages.add(textMessage.payload)
+            }
         }
 
         override fun binary(binaryMessage: BinaryMessage) {
@@ -54,5 +61,4 @@ class Chat(
 class ChatModel : ItemViewModel<Chat>() {
     val deviceProperty = bind(Chat::device)
     val chatMessages = bind(Chat::chatMessages)
-    val controller: ChatController? = item
 }

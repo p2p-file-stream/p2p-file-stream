@@ -29,7 +29,7 @@ class SessionController : Controller() {
     /** Maps nicknames to requests */
     //val requests = HashMap<String, Request>()
 
-    companion object : KLogging() {}
+    companion object : KLogging()
 
     fun chatRequest(nickname: String) {
         sessionServer.request(nickname)

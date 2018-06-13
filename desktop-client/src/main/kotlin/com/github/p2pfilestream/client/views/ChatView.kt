@@ -1,5 +1,6 @@
 package com.github.p2pfilestream.client.views
 
+import com.github.p2pfilestream.client.ChatController
 import com.github.p2pfilestream.client.ChatModel
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
@@ -7,7 +8,8 @@ import tornadofx.*
 class ChatView : View() {
     private val currentChat: ChatModel by inject()
     private val textMessageInput = SimpleStringProperty()
-    private val controller = currentChat.controller
+    private val controller: ChatController?
+        get() = currentChat.itemProperty.get()
 
     override val root = vbox {
         listview(currentChat.chatMessages)
