@@ -3,7 +3,7 @@ package com.github.p2pfilestream.chat
 import java.util.*
 
 data class BinaryMessageChunk(
-    /** Identifies the message it belongs to */
+    /** Chunk counter, first chunk is 0 */
     val index: Int,
     val payload: ByteArray
 ) {
@@ -21,5 +21,9 @@ data class BinaryMessageChunk(
         var result = index
         result = 31 * result + Arrays.hashCode(payload)
         return result
+    }
+
+    override fun toString(): String {
+        return "BinaryMessageChunk(index=$index, payload=${String(payload)})"
     }
 }

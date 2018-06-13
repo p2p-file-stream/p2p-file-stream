@@ -12,14 +12,18 @@ interface ChatPeer {
     fun binary(binaryMessage: BinaryMessage)
 
     /** Chunk of a binary */
-    fun chunk(binaryMessageChunk: BinaryMessageChunk)
-
-    /** Close a file-stream after all the chunks are sent */
-    fun close(messageIndex: Int)
+    fun chunk(messageIndex: Int, chunk: BinaryMessageChunk)
 
     /**
-     * Cancel a file-stream.
-     * Downloader must remove the partial file
+     * Ends a file-stream, so the file can be closed.
+     * @param cancel Exception occurred.
+     *  Downloader must remove the partial file after closing.
      */
+    fun close(messageIndex: Int, cancel: Boolean = false)
+
+    fun start(messageIndex: Int)
+
+    fun pause(messageIndex: Int)
+
     fun cancel(messageIndex: Int)
 }
