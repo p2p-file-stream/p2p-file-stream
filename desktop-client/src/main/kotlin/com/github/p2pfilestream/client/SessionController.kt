@@ -1,5 +1,6 @@
 package com.github.p2pfilestream.client
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.client.websocket.RelayWebSocket
 import com.github.p2pfilestream.client.websocket.RendezvousServer
@@ -7,14 +8,19 @@ import com.github.p2pfilestream.client.websocket.SessionWebSocket
 import com.github.p2pfilestream.rendezvous.SessionClient
 import com.github.p2pfilestream.rendezvous.SessionServer
 import javafx.application.Platform
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import mu.KLogging
-import tornadofx.Controller
-import tornadofx.alert
-import tornadofx.observable
+import org.apache.commons.codec.binary.Base64
+import tornadofx.*
 
 class SessionController : Controller() {
+    val nicknameProperty = SimpleStringProperty()
+    var nickname by nicknameProperty
+    val emailProperty = SimpleStringProperty()
+    var email by emailProperty
+
     private lateinit var sessionServer: SessionServer
     val chats = mutableListOf<Chat>().observable()
     private lateinit var rendezvousServer: RendezvousServer
@@ -33,10 +39,18 @@ class SessionController : Controller() {
      * Called when user has chosen a nickname
      */
     fun login(jwt: String) {
+        parseJwt(jwt)
         logger.info { "Login nickname JWT $jwt" }
         receiver = Receiver()
         rendezvousServer = RendezvousServer(jwt)
         SessionWebSocket(receiver, rendezvousServer)
+    }
+
+    private fun parseJwt(jwt: String) {
+        val payload = Base64.decodeBase64(jwt.split(".")[1])
+        val jsonTree = jacksonObjectMapper().readTree(payload)
+        email = jsonTree["email"].asText()
+        nickname = jsonTree["sub"].asText()
     }
 
     inner class Receiver : SessionClient {

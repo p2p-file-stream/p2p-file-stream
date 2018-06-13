@@ -21,8 +21,8 @@ class MainView : View("P2P File Stream") {
         row {
             vbox {
                 addClass(Styles.header)
-                label(accountController.nickname).addClass(Styles.nickname)
-                label(accountController.username)
+                label(sessionController.nicknameProperty).addClass(Styles.nickname)
+                label(sessionController.emailProperty)
             }
             hbox {
                 addClass(Styles.header)

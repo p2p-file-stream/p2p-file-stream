@@ -28,9 +28,6 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 class AccountController : Controller() {
-    val nickname: String = "Jan2000"
-    val username: String = "Jan Jansen"
-
     lateinit var account: Account
 
     private val accountServer = RestTemplate().apply {
