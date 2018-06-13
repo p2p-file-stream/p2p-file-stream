@@ -13,7 +13,7 @@ class RelayManager(
     /** Clients waiting on a match, keys are chat-ids */
     private val clients = HashMap<Long, WaitingClient>()
 
-    private companion object : KLogging() {}
+    private companion object : KLogging()
 
     fun connect(client: RelayClient, chatId: Long) {
         // Find match
@@ -37,8 +37,10 @@ class RelayManager(
     }
 
     fun disconnect(client: RelayClient) {
-        val id = clients.entries.first { it.value.relayClient == client }.key
-        clients.remove(id)
+        val id = clients.entries.firstOrNull { it.value.relayClient == client }?.key
+        if (id != null) {
+            clients.remove(id)
+        }
     }
 
     private data class WaitingClient(
