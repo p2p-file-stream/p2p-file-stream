@@ -62,6 +62,13 @@ class Chat(
 
         }
 
+        override fun close(messageIndex: Int) {
+            TODO("not implemented")
+        }
+
+        override fun cancel(messageIndex: Int) {
+            TODO("not implemented")
+        }
     }
 }
 
