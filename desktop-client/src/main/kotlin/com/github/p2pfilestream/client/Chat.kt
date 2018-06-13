@@ -12,6 +12,7 @@ import tornadofx.ItemViewModel
 import tornadofx.property
 import java.io.File
 import java.time.LocalDateTime
+import kotlin.concurrent.thread
 
 class Chat(
     val device: Device,
@@ -23,16 +24,20 @@ class Chat(
 
     private companion object : KLogging()
 
-    private val fileProcessor = FileSender(chatPeer::chunk)
+    private val fileSender = FileSender(chatPeer::chunk)
     private var messageCounter: Int = 1
     private fun nextMessageIndex() = messageCounter++
 
     override fun sendFile(file: File) {
         val messageIndex = nextMessageIndex()
+        val fileName = file.name
         val inputStream = file.inputStream()
         val fileSize = inputStream.channel.size()
-        BinaryMessage(messageIndex, file.name, fileSize)
-        fileProcessor.read(inputStream)
+        val message = BinaryMessage(messageIndex, fileName, fileSize)
+        chatPeer.binary(message)
+        thread(name = "Reading binary $fileName") {
+            fileSender.read(messageIndex, inputStream)
+        }
     }
 
     override fun sendText(text: String) {
@@ -48,11 +53,13 @@ class Chat(
         }
 
         override fun binary(binaryMessage: BinaryMessage) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            Platform.runLater {
+                chatMessages.add(binaryMessage.toString())
+            }
         }
 
         override fun chunk(binaryMessageChunk: BinaryMessageChunk) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
         }
 
     }

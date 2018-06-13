@@ -10,7 +10,7 @@ class FileSender(
 ) {
     /** Read file and parse into message-chunk
      */
-    fun read(inputStream: InputStream) {
+    fun read(messageIndex: Int, inputStream: InputStream) {
         val data = ByteArray(CHUNK_SIZE)
         var bytesRead = inputStream.read(data)
         while (bytesRead != -1) {
@@ -19,14 +19,9 @@ class FileSender(
             } else {
                 data.take(bytesRead).toByteArray()
             }
-            processChunk(chunkBytes)
+            chunkConsumer(BinaryMessageChunk(messageIndex, chunkBytes.clone()))
             bytesRead = inputStream.read(data)
         }
         inputStream.close()
-    }
-
-    private fun processChunk(bytes: ByteArray) {
-        val chunk = BinaryMessageChunk(0, bytes)
-        chunkConsumer(chunk)
     }
 }
