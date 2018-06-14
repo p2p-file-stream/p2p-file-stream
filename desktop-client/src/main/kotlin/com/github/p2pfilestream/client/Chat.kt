@@ -35,8 +35,7 @@ class Chat(
     override fun sendFile(file: File) {
         val messageIndex = nextMessageIndex()
         val fileName = file.name
-        val inputStream = file.inputStream()
-        val fileSize = inputStream.channel.size()
+        val fileSize = file.length()
         val message = BinaryMessage(messageIndex, fileName, fileSize)
         chatPeer.binary(message)
         val sender = FileSender(file, chatPeer.downloader(messageIndex))
