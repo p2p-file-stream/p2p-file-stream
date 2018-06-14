@@ -16,14 +16,17 @@
 
     <dependencies>
         <dependency>
+            <!-- RestTemplate -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
+            <!-- WebSockets -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-websocket</artifactId>
         </dependency>
         <dependency>
+            <!-- WebSockets -->
             <groupId>org.glassfish.tyrus.bundles</groupId>
             <artifactId>tyrus-standalone-client</artifactId>
             <version>1.13.1</version>
@@ -34,6 +37,7 @@
             <version>${tornadofx.version}</version>
         </dependency>
         <dependency>
+            <!-- For Base64 encoding -->
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.11</version>
@@ -53,6 +57,11 @@
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
+        </dependency>
+        <dependency>
+            <!-- Logger -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
         </dependency>
     </dependencies>
 
