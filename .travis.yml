@@ -1,1 +1,9 @@
 language: java
+deploy:
+  provider: releases
+  api_key:
+    secure: Cr5TIjqRFrXqEVI0+D38xhD9KENpjrxO5nephhfn52/mosuLVNQgSdsKtZEOBfA5HUL+lFJf34UiyUeK1DT2EJIcuvxHWETwAjpXYomjV1EXljS8yfp+I4BdBiha96QJ5oBvcTdjKxNNioxE4W11KETdbMp9lLzl08s/zeVG1DJuaKesyjqYmCytvXqIfHs2DJYVU5NLW/mZ5sEGnO8CqBNCWtDrI1fecWxt3kWtmdz6XQfM7mOJEcPrHPNC6hAPGyReb9aZzLNktwKlMmuWBaYkFL++HCvyY9OPAqw59IBh42Ngxlu71WJ2sO+/Itfr9ClJbiizMp5WTRj54xPq5DO/AZy33kcfFUaZDbynYA+1Ib8OOt7KTFTM5MGy+P3DE+QlWtyyxxoDH+N+MWQxg/U9CxsXTF/QSMrEOnT4xcHEXERsFEVvoLdHl8CUKL0Rv7dQ/jXSpdMr0FjMhb20ZKZuSOU+RQB1xVi1zoosTdeXZAW7sjfQSLH1kmO3lNWSITKpfcuaHPO+Gc2RGrAu9VqAIv48XaoWjRMzHqz4ufuEKens7PqgHtKEnL1209SxuUTd1wUc6lLSGbdW2wwVKk3JHzE1L2aYpazMNtfRwJo3T6yHzcFF4YSIehKEPmYdaP9pMjUHM8JwPr4Q/yYLB1z7ykyOGddXJhyuU4BGtiU=
+  file: desktop-client/target/desktop-client-0.1.jar
+  on:
+    repo: p2p-file-stream/p2p-file-stream
+    tags: true
