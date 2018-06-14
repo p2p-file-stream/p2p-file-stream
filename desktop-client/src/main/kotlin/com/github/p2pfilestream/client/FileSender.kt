@@ -51,6 +51,7 @@ class FileSender(
             try {
                 bytesRead = inputStream.read(data)
             } catch (e: IOException) {
+                logger.warn(e) { "Exception occurred while reading" }
                 downloader.close(true)
                 closeInputStream()
                 return

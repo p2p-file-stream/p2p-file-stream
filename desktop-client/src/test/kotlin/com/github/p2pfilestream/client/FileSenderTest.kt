@@ -12,13 +12,13 @@ import java.io.File
 class FileSenderTest {
     private val downloader: FileDownloader = mockk(relaxed = true)
     private val text = "Hello World, this is a test file!"
-    private val file = File.createTempFile("HelloWorld", null).apply {
-        writeText(text)
-    }
+    private val file = File.createTempFile("HelloWorld", null)
 
     @BeforeEach
     fun setUp() {
         clearMocks(downloader)
+        file.createNewFile()
+        file.writeText(text)
     }
 
     @Test
@@ -98,5 +98,14 @@ class FileSenderTest {
             downloader.chunk(BinaryMessageChunk(0, "Hello Wo".toByteArray()))
             downloader.chunk(BinaryMessageChunk(1, "rld, thi".toByteArray()))
         }
+    }
+
+    @Test
+    fun `File should be closed after reading`() {
+        val fileSender = FileSender(file, downloader)
+        fileSender.start()
+        verify { downloader.close() }
+        // Test if the file is closed by trying to delete it
+        file.delete()
     }
 }
