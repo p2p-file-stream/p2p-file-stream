@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.accountserver
+package com.github.p2pfilestream.accountserver.repositories
 
 import com.github.p2pfilestream.Device
 import org.hibernate.exception.ConstraintViolationException

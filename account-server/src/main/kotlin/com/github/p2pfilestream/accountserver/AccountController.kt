@@ -1,5 +1,6 @@
 package com.github.p2pfilestream.accountserver
 
+import com.github.p2pfilestream.accountserver.repositories.AccountRepository
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping

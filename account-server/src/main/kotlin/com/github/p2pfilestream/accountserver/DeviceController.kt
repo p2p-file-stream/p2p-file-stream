@@ -2,6 +2,9 @@ package com.github.p2pfilestream.accountserver
 
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.accountserver.config.SECRET
+import com.github.p2pfilestream.accountserver.repositories.AccountRepository
+import com.github.p2pfilestream.accountserver.repositories.DeviceRepository
+import com.github.p2pfilestream.accountserver.repositories.saveOrNull
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.core.Authentication
