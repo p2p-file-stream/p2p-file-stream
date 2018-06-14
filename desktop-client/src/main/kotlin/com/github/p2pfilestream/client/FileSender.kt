@@ -17,20 +17,36 @@ class FileSender(
     private val cloneBytes: Boolean = false
 ) : FileUploader {
     private val inputStream = file.inputStream()
+    @Volatile
     private var sending = false
+    @Volatile
     private var cancelled = false
     private var chunkCount = 0
+    private var readerThread: Thread? = null
 
     private companion object : KLogging()
 
     /** Start or resume sending chunks */
     override fun start() {
-        sending = true
-        thread(name = "Reader for ${file.name}") { read() }
+        if (sending) {
+            logger.warn { "Is already started" }
+            return
+        }
+        if (readerThread == null || readerThread?.state == Thread.State.TERMINATED) {
+            // It's save to start
+            sending = true
+            readerThread = thread(name = "Reader for ${file.name}") { read() }
+        } else {
+            logger.warn { "Thread is running" }
+        }
     }
 
     /** Pause sending chunks because of full buffer (backpressure). */
     override fun pause() {
+        if (!sending) {
+            logger.warn { "Is already paused" }
+            return
+        }
         sending = false
     }
 
@@ -82,5 +98,10 @@ class FileSender(
     private fun closeInputStream() {
         logger.info { "Closing InputStream" }
         inputStream.close()
+    }
+
+    fun joinReaderThread() {
+        readerThread?.join()
+                ?: logger.warn { "readerThread was null" }
     }
 }

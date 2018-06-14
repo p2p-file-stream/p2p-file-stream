@@ -27,6 +27,7 @@ class FileSenderTest {
         val chunkSize = 8
         val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
         fileSender.start()
+        fileSender.joinReaderThread()
         verifySequence {
             // Verify chunks
             text.chunkedSequence(chunkSize).forEachIndexed { i, chunk ->
@@ -49,6 +50,7 @@ class FileSenderTest {
         }
         // Start sender
         fileSender.start()
+        fileSender.joinReaderThread()
         // Verify pausing
         verifySequence {
             downloader.chunk(BinaryMessageChunk(0, "Hello Wo".toByteArray()))
@@ -68,11 +70,11 @@ class FileSenderTest {
         }
         // Start sender
         fileSender.start()
-        // Verify pausing
-        verify(exactly = 2) { downloader.chunk(any()) }
+        fileSender.joinReaderThread()
         // Start it again
         clearMocks(downloader)
         fileSender.start()
+        fileSender.joinReaderThread()
         verifySequence {
             downloader.chunk(BinaryMessageChunk(2, "s is a t".toByteArray()))
             downloader.chunk(BinaryMessageChunk(3, "est file".toByteArray()))
@@ -93,6 +95,7 @@ class FileSenderTest {
         }
         // Start sender
         fileSender.start()
+        fileSender.joinReaderThread()
         // Verify canceling
         verifySequence {
             downloader.chunk(BinaryMessageChunk(0, "Hello Wo".toByteArray()))
@@ -104,8 +107,26 @@ class FileSenderTest {
     fun `File should be closed after reading`() {
         val fileSender = FileSender(file, downloader)
         fileSender.start()
+        fileSender.joinReaderThread()
         verify { downloader.close() }
         // Test if the file is closed by trying to delete it
         file.delete()
+    }
+
+    @Test
+    fun `Starting twice shouldn't throw exception, but only log a warning`() {
+        val chunkSize = 5
+        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        fileSender.start()
+        fileSender.start()
+        fileSender.joinReaderThread()
+        verifySequence {
+            // Verify chunks
+            text.chunkedSequence(chunkSize).forEachIndexed { i, chunk ->
+                downloader.chunk(BinaryMessageChunk(i, chunk.toByteArray()))
+            }
+            // Closing
+            downloader.close()
+        }
     }
 }
