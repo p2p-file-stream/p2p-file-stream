@@ -4,6 +4,7 @@ import com.github.p2pfilestream.client.AccountController
 import com.github.p2pfilestream.client.ChatModel
 import com.github.p2pfilestream.client.SessionController
 import com.github.p2pfilestream.client.Styles
+import com.github.p2pfilestream.client.dal.PreferencesDeviceStore
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -23,6 +24,10 @@ class MainView : View("P2P File Stream") {
                 addClass(Styles.header)
                 label(sessionController.nicknameProperty).addClass(Styles.nickname)
                 label(sessionController.emailProperty)
+                button("Logout").action {
+                    PreferencesDeviceStore().remove()
+                    replaceWith(LoginView::class)
+                }
             }
             hbox {
                 addClass(Styles.header)
