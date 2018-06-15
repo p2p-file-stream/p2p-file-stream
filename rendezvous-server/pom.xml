@@ -102,6 +102,23 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>2.0.4</version>
+                <configuration>
+                    <appName>p2p-file-stream-rendezvous</appName>
+                    <processTypes>
+                        <web>
+                            java -Dserver.port=$PORT -jar target/rendezvous-server-0.1.jar
+                        </web>
+                    </processTypes>
+                    <includeTarget>false</includeTarget>
+                    <includes>
+                        <include>target/rendezvous-server-0.1.jar</include>
+                    </includes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
