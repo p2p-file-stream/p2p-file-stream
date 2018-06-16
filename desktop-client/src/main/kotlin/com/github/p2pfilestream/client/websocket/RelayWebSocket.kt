@@ -22,14 +22,14 @@ class RelayWebSocket(
     private lateinit var decode: MessageDecoder<ChatPeer>
 
     init {
-        manager = rendezvousServer.connect("relay", this)
+        manager = rendezvousServer.connect("/relay", this)
         manager.headers["Chat-Id"] = chatId.toString()
         manager.start()
         SessionWebSocket.logger.info { "Connecting to WebSocket" }
     }
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        logger.info { "WebSocket connection established" }
+        logger.info { "WebSocket connection established: ${session.uri}" }
         this.session = session
         val other: ChatPeer = MessageEncoder.create {
             if (session.isOpen) {

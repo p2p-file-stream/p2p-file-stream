@@ -2,8 +2,10 @@ package com.github.p2pfilestream.client.dal
 
 import java.util.prefs.Preferences
 
-private const val systemProperty = "com.github.p2pfilestream.client.deviceToken"
-private val key = System.getProperty(systemProperty, "deviceToken")
+private val key = System.getProperty(
+    "p2pfilestream.deviceToken",
+    "deviceToken"
+)
 
 /**
  * Use Java Preferences API to store logged in device Json Web Token (JWT)

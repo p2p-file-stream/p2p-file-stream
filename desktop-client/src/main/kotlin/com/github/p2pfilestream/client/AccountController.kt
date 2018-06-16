@@ -15,6 +15,7 @@ import io.jsonwebtoken.JwsHeader
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SigningKeyResolverAdapter
 import javafx.scene.control.Alert
+import mu.KLogging
 import org.apache.commons.codec.binary.Base64
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
@@ -27,11 +28,17 @@ import java.security.Key
 import java.security.MessageDigest
 import java.security.SecureRandom
 
+private val accountServerUrl = System.getProperty(
+    "p2pfilestream.accountServerUrl",
+    "https://p2p-file-stream-account-server.herokuapp.com"
+)
+
 class AccountController : Controller() {
     lateinit var account: Account
 
     private val accountServer = RestTemplate().apply {
-        uriTemplateHandler = DefaultUriBuilderFactory("http://localhost:8080")
+        logger.info { "accountServerUrl=${accountServerUrl}" }
+        uriTemplateHandler = DefaultUriBuilderFactory(accountServerUrl)
     }
 
     private val objectMapper = jacksonObjectMapper()
@@ -41,6 +48,8 @@ class AccountController : Controller() {
 
     private val verifier: String
     private val challenge: String
+
+    private companion object : KLogging()
 
     init {
         val auth0Challenge = generateChallenge()

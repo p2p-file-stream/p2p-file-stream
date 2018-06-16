@@ -23,13 +23,13 @@ class SessionWebSocket(
     private val decode = MessageDecoder<SessionClient>(sessionClient)
 
     init {
-        manager = rendezvousServer.connect("session", this)
+        manager = rendezvousServer.connect("/session", this)
         manager.start()
         logger.info { "Connecting to WebSocket" }
     }
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        logger.info { "WebSocket connection established" }
+        logger.info { "WebSocket connection established: ${session.uri}" }
         this.session = session
         val sessionServer: SessionServer = MessageEncoder.create {
             if (session.isOpen) {

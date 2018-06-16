@@ -4,7 +4,10 @@ import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.client.WebSocketConnectionManager
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
 
-private const val rendezvousUrl = "ws://localhost:8087/"
+private val rendezvousUrl = System.getProperty(
+    "p2pfilestream.rendezvousUrl",
+    "wss://p2p-file-stream-rendezvous.herokuapp.com"
+)
 
 class RendezvousServer(
     private val jwt: String
