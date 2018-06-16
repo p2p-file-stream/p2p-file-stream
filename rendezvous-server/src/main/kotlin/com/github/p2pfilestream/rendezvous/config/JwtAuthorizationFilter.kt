@@ -2,6 +2,7 @@ package com.github.p2pfilestream.rendezvous.config
 
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.accountserver.NICKNAME_JWT_SECRET
 import io.jsonwebtoken.Jwts
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -14,6 +15,8 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+private const val TOKEN_PREFIX = "Bearer "
+private const val HEADER_STRING = "Authorization"
 
 class JwtAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenticationFilter(authManager) {
     override fun doFilterInternal(
@@ -39,7 +42,7 @@ class JwtAuthorizationFilter(authManager: AuthenticationManager) : BasicAuthenti
         if (token != null) {
             // parse the token.
             val body = Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(NICKNAME_JWT_SECRET)
                 .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                 .body
             val nickname = body.subject ?: return null
