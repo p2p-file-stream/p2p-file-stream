@@ -3,21 +3,37 @@ package com.github.p2pfilestream.client
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.chat.*
 import javafx.application.Platform
-import javafx.collections.FXCollections
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import mu.KLogging
-import tornadofx.ItemViewModel
-import tornadofx.property
+import tornadofx.getValue
+import tornadofx.observable
+import tornadofx.setValue
 import java.io.File
 import java.io.IOException
 import java.time.LocalDateTime
+import kotlin.collections.set
 
+/**
+ * Represents a chat between two devices: "user" and "peer".
+ *
+ * Can be initialized before cat-request is confirmed.
+ */
 class Chat(
-    val device: Device,
-    private val chatPeer: ChatPeer
+    val peerNickname: String,
+    private val userDevice: Device
 ) : ChatController {
-    val startProperty = property(LocalDateTime.now())
-    var start by startProperty
-    val chatMessages = FXCollections.observableArrayList<String>()
+    /** Device is only available if the chat is started */
+    val peerDeviceProperty = SimpleObjectProperty<Device>()
+    private var peerDevice: Device? by peerDeviceProperty
+    private lateinit var chatPeer: DisconnectableChatPeer
+
+    val start: LocalDateTime = LocalDateTime.now()
+
+    val chatMessages = ArrayList<ReceivedChatMessage>().observable()
+
+    val closedProperty = SimpleBooleanProperty()
+    var closed by closedProperty
 
     /** Maps MessageIndex to FileReceivers */
     private val fileReceivers = HashMap<Int, FileReceiver>()
@@ -40,12 +56,23 @@ class Chat(
         chatPeer.binary(message)
         val sender = FileSender(file, chatPeer.downloader(messageIndex))
         fileSenders[messageIndex] = sender
+        displayUserMessage(message)
         // todo: Show progress of uploading
     }
 
     override fun sendText(text: String) {
         logger.info { "Send test $text" }
-        chatPeer.text(TextMessage(nextMessageIndex(), text))
+        val message = TextMessage(text)
+        chatPeer.text(message)
+        displayUserMessage(message)
+    }
+
+    private fun displayUserMessage(message: ChatMessage) {
+        chatMessages.add(ReceivedChatMessage(message, userDevice, true))
+    }
+
+    fun close() {
+        chatPeer.disconnect()
     }
 
     /** Choose download dir */
@@ -91,22 +118,40 @@ class Chat(
 
 
     val receiver = object : ChatController.Receiver {
+        override fun connectionEstablished(chatPeer: DisconnectableChatPeer, device: Device) {
+            Platform.runLater {
+                this@Chat.chatPeer = chatPeer
+                this@Chat.peerDevice = device
+            }
+        }
+
+        override fun disconnect(reason: String?) {
+            Platform.runLater {
+                logger.info { "Chat disconnected" }
+                closed = true
+            }
+        }
+
         /** Receive a text-message */
         override fun text(textMessage: TextMessage) {
             Platform.runLater {
-                chatMessages.add(textMessage.payload)
+                displayRemoteMessage(textMessage)
             }
         }
 
         /** Receive a binary */
         override fun binary(binaryMessage: BinaryMessage) {
             Platform.runLater {
-                chatMessages.add(binaryMessage.toString())
+                displayRemoteMessage(binaryMessage)
                 createFile(binaryMessage.name)?.let { file ->
                     val index = binaryMessage.index
                     fileReceivers[index] = FileReceiver(file, chatPeer.uploader(index))
                 }
             }
+        }
+
+        private fun displayRemoteMessage(chatMessage: ChatMessage) {
+            chatMessages.add(ReceivedChatMessage(chatMessage, peerDevice!!, false))
         }
 
         override fun chunk(messageIndex: Int, chunk: BinaryMessageChunk) =
@@ -124,9 +169,4 @@ class Chat(
         override fun cancel(messageIndex: Int) =
             uploader(messageIndex) { cancel() }
     }
-}
-
-class ChatModel : ItemViewModel<Chat>() {
-    val deviceProperty = bind(Chat::device)
-    val chatMessages = bind(Chat::chatMessages)
 }

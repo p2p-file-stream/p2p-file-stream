@@ -1,6 +1,7 @@
 package com.github.p2pfilestream.client
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.client.websocket.RelayWebSocket
 import com.github.p2pfilestream.client.websocket.RendezvousServer
@@ -17,12 +18,15 @@ import tornadofx.*
 
 class SessionController : Controller() {
     val nicknameProperty = SimpleStringProperty()
-    var nickname by nicknameProperty
+    var nickname: String by nicknameProperty
     val emailProperty = SimpleStringProperty()
-    var email by emailProperty
+    var email: String by emailProperty
+    lateinit var userDevice: Device
 
     private lateinit var sessionServer: SessionServer
-    val chats = mutableListOf<Chat>().observable()
+
+    val chats = ArrayList<Chat>().observable()
+
     private lateinit var rendezvousServer: RendezvousServer
     private lateinit var receiver: Receiver
 
@@ -32,6 +36,7 @@ class SessionController : Controller() {
     companion object : KLogging()
 
     fun chatRequest(nickname: String) {
+        addChat(nickname)
         sessionServer.request(nickname)
     }
 
@@ -51,6 +56,16 @@ class SessionController : Controller() {
         val jsonTree = jacksonObjectMapper().readTree(payload)
         email = jsonTree["email"].asText()
         nickname = jsonTree["sub"].asText()
+        val accountId = jsonTree["account"].asText()
+        userDevice = Device(nickname, Account(email, accountId))
+    }
+
+    private fun chatByNickname(nickname: String): Chat? =
+        chats.find { it.peerNickname == nickname && !it.closed }
+
+    private fun addChat(nickname: String) {
+        val chat = Chat(nickname, userDevice)
+        chats.add(chat)
     }
 
     inner class Receiver : SessionClient {
@@ -77,18 +92,22 @@ class SessionController : Controller() {
                     "${device.nickname} requested a chat with you",
                     buttons = *arrayOf(confirm, decline)
                 ) {
+                    addChat(device.nickname)
                     sessionServer.response(device.nickname, it == confirm)
                 }
             }
         }
 
         override fun startChat(device: Device, chatId: Long) {
-            logger.info { "Start a chat with $device; id: $chatId" }
-            RelayWebSocket(chatId, rendezvousServer) {
-                logger.info { "Connected to Relay Server" }
-                val chat = Chat(device, it)
-                chats.add(chat)
-                chat.receiver
+            val chat = chatByNickname(device.nickname)
+            if (chat == null) {
+                logger.error { "startChat() called, but chat does not exist" }
+            } else {
+                logger.info { "Start a chat with $device; id: $chatId" }
+                RelayWebSocket(chatId, rendezvousServer) { other ->
+                    chat.receiver.connectionEstablished(other, device)
+                    chat.receiver
+                }
             }
         }
 

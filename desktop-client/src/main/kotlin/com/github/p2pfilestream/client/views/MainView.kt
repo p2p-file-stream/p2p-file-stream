@@ -6,6 +6,7 @@ import com.github.p2pfilestream.client.SessionController
 import com.github.p2pfilestream.client.Styles
 import com.github.p2pfilestream.client.dal.PreferencesDeviceStore
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.ListChangeListener
 import javafx.scene.layout.Priority
 import tornadofx.*
 import java.time.format.DateTimeFormatter
@@ -15,12 +16,17 @@ class MainView : View("P2P File Stream") {
     private val sessionController: SessionController by inject()
     private val chats = sessionController.chats
     private val currentChat: ChatModel by inject()
+    private val chatView: ChatView by inject()
 
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     override val root = gridpane {
+        constraintsForColumn(0).prefWidth = 250.0
+        constraintsForColumn(1).hgrow = Priority.ALWAYS
+        constraintsForRow(1).vgrow = Priority.ALWAYS
         row {
             vbox {
+                // Display logged in user-info
                 addClass(Styles.header)
                 label(sessionController.nicknameProperty).addClass(Styles.nickname)
                 label(sessionController.emailProperty)
@@ -30,17 +36,27 @@ class MainView : View("P2P File Stream") {
                 }
             }
             hbox {
+                // Information about current chat
                 addClass(Styles.header)
-                label(currentChat.deviceProperty)
+                label(currentChat.nicknameProperty)
+                label(currentChat.emailProperty)
+                button("Close chat") {
+                    action {
+                        currentChat.item.close()
+                    }
+                    visibleWhen(currentChat.empty.not())
+                }
             }
         }
         row {
             vbox {
+                // List of chats
                 listview(chats) {
+                    vgrow = Priority.ALWAYS
                     cellFormat {
                         graphic = hbox {
                             addClass(Styles.chatList)
-                            label(it.device.nickname).addClass(Styles.nickname)
+                            label(it.peerNickname).addClass(Styles.nickname)
                             region { hgrow = Priority.ALWAYS }
                             label(it.start.format(timeFormatter))
                         }
@@ -49,8 +65,20 @@ class MainView : View("P2P File Stream") {
                 }
                 button("New chat").action(::newChat)
             }
-            add(ChatView::class)
+            add(chatView)
         }
+    }
+
+    init {
+        // When a new chat is opened, view it
+        chats.addListener(ListChangeListener {
+            while (it.next()) {
+                val newChat = it.addedSubList.firstOrNull()
+                if (newChat != null) {
+                    currentChat.item = newChat
+                }
+            }
+        })
     }
 
     private fun newChat() {

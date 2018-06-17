@@ -1,6 +1,7 @@
 package com.github.p2pfilestream.client
 
-import com.github.p2pfilestream.chat.ChatPeer
+import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.chat.DisconnectableChatPeer
 import java.io.File
 
 interface ChatController {
@@ -8,5 +9,11 @@ interface ChatController {
 
     fun sendText(text: String)
 
-    interface Receiver : ChatPeer
+    interface Receiver : DisconnectableChatPeer {
+        /** Called after the WebSocket connection is established */
+        fun connectionEstablished(
+            chatPeer: DisconnectableChatPeer,
+            device: Device
+        )
+    }
 }

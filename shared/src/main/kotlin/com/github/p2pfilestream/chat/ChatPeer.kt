@@ -1,5 +1,7 @@
 package com.github.p2pfilestream.chat
 
+import com.github.p2pfilestream.encoding.Disconnectable
+
 interface ChatPeer {
     /** Send a text-message */
     fun text(textMessage: TextMessage)
@@ -27,3 +29,12 @@ interface ChatPeer {
 
     fun cancel(messageIndex: Int)
 }
+
+interface DisconnectableChatPeer : ChatPeer, Disconnectable
+
+fun ChatPeer.onDisconnect(block: () -> Unit): DisconnectableChatPeer =
+    object : DisconnectableChatPeer, ChatPeer by this, Disconnectable {
+        override fun disconnect(reason: String?) {
+            block()
+        }
+    }

@@ -4,12 +4,14 @@ import javafx.scene.paint.Color
 import tornadofx.Stylesheet
 import tornadofx.cssclass
 import tornadofx.em
+import java.awt.Font
 
 class Styles : Stylesheet() {
     companion object {
         val nickname by cssclass()
         val chatList by cssclass()
         val header by cssclass()
+        val textMessage by cssclass()
     }
 
     init {
@@ -23,6 +25,9 @@ class Styles : Stylesheet() {
         }
         header {
             backgroundColor += Color.SKYBLUE
+        }
+        textMessage {
+            fontFamily = Font.MONOSPACED
         }
     }
 }
