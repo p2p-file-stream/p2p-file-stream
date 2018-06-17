@@ -9,8 +9,8 @@ import java.io.IOException
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.thread
 
-private const val MIN_BUFFER = 3
-private const val MAX_BUFFER = 10
+private const val MIN_BUFFER = 5
+private const val MAX_BUFFER = 100
 
 /** Receives chunks for a certain file */
 class FileReceiver(
@@ -81,7 +81,6 @@ class FileReceiver(
                 outputStream.write(bytes)
                 // Update progress
                 madeProgress(bytes.size)
-                logger.info { "Wrote chunk $chunkCount" }
             }
         } catch (e: IOException) {
             logger.warn(e) { "IOException while writing file" }
@@ -92,6 +91,7 @@ class FileReceiver(
         } finally {
             logger.info { "Closing outputStream" }
             outputStream.close()
+            finished()
         }
     }
 

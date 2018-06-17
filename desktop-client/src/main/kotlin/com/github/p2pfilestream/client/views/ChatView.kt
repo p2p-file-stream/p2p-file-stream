@@ -45,11 +45,15 @@ class ChatView : View() {
                         else -> throw IllegalStateException("Type not expected")
                     }
                     // File progressProperty
-                    if (it.fileStreamProgress != null) {
+                    val progress = it.fileStreamProgress
+                    if (progress != null) {
                         bottom = hbox {
-                            progressbar(it.fileStreamProgress.progressPercentage)
-                            button("Cancel").action {
-                                it.fileStreamProgress.cancel()
+                            progressbar(progress.progressPercentage)
+                            button("Cancel") {
+                                action {
+                                    progress.cancel()
+                                }
+                                visibleProperty().bind(progress.finishedProperty.not())
                             }
                         }
                     }

@@ -12,7 +12,7 @@ class FileSender(
     private val file: File,
     private val downloader: FileDownloader,
     /** Size of a chunk in bytes  */
-    private val chunkSize: Int = 1024 * 1024,
+    private val chunkSize: Int = 1024,
     /** If byte-arrays should be cloned, needed for unit-testing */
     private val cloneBytes: Boolean = false
 ) : FileUploader, FileStreamProgress(file.length()) {
@@ -34,6 +34,7 @@ class FileSender(
         }
         if (readerThread == null || readerThread?.state == Thread.State.TERMINATED) {
             // It's save to start
+            logger.info { "Starting" }
             sending = true
             readerThread = thread(name = "Reader for ${file.name}") { read() }
         } else {
@@ -48,10 +49,13 @@ class FileSender(
             return
         }
         sending = false
+        joinReaderThread()
+        logger.info { "Pause" }
     }
 
     /** Cancel the upload */
     override fun cancel() {
+        logger.info { "Cancelling" }
         cancelled = true
         sending = false
     }
@@ -91,7 +95,6 @@ class FileSender(
             downloader.chunk(BinaryMessageChunk(chunkCount++, chunkBytes))
             // Update progress
             madeProgress(bytesRead)
-            logger.info { "Read chunk $chunkCount" }
         }
         if (cancelled) {
             closeInputStream()
@@ -101,6 +104,7 @@ class FileSender(
     private fun closeInputStream() {
         logger.info { "Closing InputStream" }
         inputStream.close()
+        finished()
     }
 
     fun joinReaderThread() {
