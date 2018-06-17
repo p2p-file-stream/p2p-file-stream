@@ -9,14 +9,15 @@ import java.io.IOException
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.thread
 
-private const val MIN_BUFFER = 5
-private const val MAX_BUFFER = 90
+private const val MIN_BUFFER = 3
+private const val MAX_BUFFER = 10
 
 /** Receives chunks for a certain file */
 class FileReceiver(
     private val file: File,
-    private val uploader: FileUploader
-) : FileDownloader {
+    private val uploader: FileUploader,
+    fileSize: Long
+) : FileDownloader, FileStreamProgress(fileSize) {
     private val buffer = LinkedBlockingQueue<ByteArray>()
     private var paused = true
     private var chunkCount = 0
@@ -57,6 +58,11 @@ class FileReceiver(
         }
     }
 
+    /** Triggered if the user presses cancel */
+    override fun cancel() {
+        close(true)
+    }
+
     private fun write() {
         val outputStream = file.outputStream()
         try {
@@ -71,7 +77,11 @@ class FileReceiver(
                     pause()
                 }
                 // Write chunk to file
-                outputStream.write(buffer.take())
+                val bytes = buffer.take()
+                outputStream.write(bytes)
+                // Update progress
+                madeProgress(bytes.size)
+                logger.info { "Wrote chunk $chunkCount" }
             }
         } catch (e: IOException) {
             logger.warn(e) { "IOException while writing file" }

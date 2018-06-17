@@ -8,7 +8,6 @@ import com.github.p2pfilestream.client.Styles
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
 import tornadofx.*
 import java.time.format.DateTimeFormatter
 
@@ -28,7 +27,7 @@ class ChatView : View() {
                 graphic = borderpane {
                     // Message header
                     top = hbox {
-                        label(it.device.nickname)
+                        label(it.author.nickname)
                         region { hgrow = Priority.ALWAYS }
                         label(it.time.format(timeFormatter))
                     }
@@ -45,14 +44,19 @@ class ChatView : View() {
                         }
                         else -> throw IllegalStateException("Type not expected")
                     }
+                    // File progressProperty
+                    if (it.fileStreamProgress != null) {
+                        bottom = hbox {
+                            progressbar(it.fileStreamProgress.progressPercentage)
+                            button("Cancel").action {
+                                it.fileStreamProgress.cancel()
+                            }
+                        }
+                    }
                     // Align it
                     maxWidth = 500.0
                     if (it.userAuthored) {
                         alignment = Pos.CENTER_RIGHT
-                        // Color user authored messages green
-                        style {
-                            backgroundColor += Color.LIGHTGREEN
-                        }
                     }
                 }
             }

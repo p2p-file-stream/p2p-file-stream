@@ -12,10 +12,10 @@ class FileSender(
     private val file: File,
     private val downloader: FileDownloader,
     /** Size of a chunk in bytes  */
-    private val chunkSize: Int = 1024,
+    private val chunkSize: Int = 1024 * 1024,
     /** If byte-arrays should be cloned, needed for unit-testing */
     private val cloneBytes: Boolean = false
-) : FileUploader {
+) : FileUploader, FileStreamProgress(file.length()) {
     private val inputStream = file.inputStream()
     @Volatile
     private var sending = false
@@ -89,6 +89,9 @@ class FileSender(
             }
             // If chunkBytes are not cloned, the receiver should immediately process them
             downloader.chunk(BinaryMessageChunk(chunkCount++, chunkBytes))
+            // Update progress
+            madeProgress(bytesRead)
+            logger.info { "Read chunk $chunkCount" }
         }
         if (cancelled) {
             closeInputStream()

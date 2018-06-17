@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
+import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileSenderTest {
@@ -128,5 +129,17 @@ class FileSenderTest {
             // Closing
             downloader.close()
         }
+    }
+
+    @Test
+    fun `Progress percentage`() {
+        val chunkSize = 8
+        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        // Percentage should be 0%
+        assertEquals(0.0, fileSender.progressPercentage.get())
+        fileSender.start()
+        fileSender.joinReaderThread()
+        // Should be 100%
+        assertEquals(1.0, fileSender.progressPercentage.get())
     }
 }

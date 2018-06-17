@@ -56,19 +56,18 @@ class Chat(
         chatPeer.binary(message)
         val sender = FileSender(file, chatPeer.downloader(messageIndex))
         fileSenders[messageIndex] = sender
-        displayUserMessage(message)
-        // todo: Show progress of uploading
+        displayUserMessage(message, sender)
     }
 
     override fun sendText(text: String) {
-        logger.info { "Send test $text" }
+        logger.info { "Send text $text" }
         val message = TextMessage(text)
         chatPeer.text(message)
         displayUserMessage(message)
     }
 
-    private fun displayUserMessage(message: ChatMessage) {
-        chatMessages.add(ReceivedChatMessage(message, userDevice, true))
+    private fun displayUserMessage(message: ChatMessage, fileSender: FileSender? = null) {
+        chatMessages.add(ReceivedChatMessage(message, userDevice, true, fileSender))
     }
 
     fun close() {
@@ -142,16 +141,17 @@ class Chat(
         /** Receive a binary */
         override fun binary(binaryMessage: BinaryMessage) {
             Platform.runLater {
-                displayRemoteMessage(binaryMessage)
                 createFile(binaryMessage.name)?.let { file ->
                     val index = binaryMessage.index
-                    fileReceivers[index] = FileReceiver(file, chatPeer.uploader(index))
+                    val fileReceiver = FileReceiver(file, chatPeer.uploader(index), binaryMessage.size)
+                    fileReceivers[index] = fileReceiver
+                    displayRemoteMessage(binaryMessage, fileReceiver)
                 }
             }
         }
 
-        private fun displayRemoteMessage(chatMessage: ChatMessage) {
-            chatMessages.add(ReceivedChatMessage(chatMessage, peerDevice!!, false))
+        private fun displayRemoteMessage(chatMessage: ChatMessage, fileReceiver: FileReceiver? = null) {
+            chatMessages.add(ReceivedChatMessage(chatMessage, peerDevice!!, false, fileReceiver))
         }
 
         override fun chunk(messageIndex: Int, chunk: BinaryMessageChunk) =
