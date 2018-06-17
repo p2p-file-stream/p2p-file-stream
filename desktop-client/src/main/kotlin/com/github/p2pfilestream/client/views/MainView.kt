@@ -44,7 +44,7 @@ class MainView : View("P2P File Stream") {
                     action {
                         currentChat.item.close()
                     }
-                    visibleWhen(currentChat.empty.not())
+                    visibleWhen(currentChat.closed.not())
                 }
             }
         }
@@ -70,12 +70,16 @@ class MainView : View("P2P File Stream") {
     }
 
     init {
-        // When a new chat is opened, view it
         chats.addListener(ListChangeListener {
             while (it.next()) {
+                // When a new chat is opened, view it
                 val newChat = it.addedSubList.firstOrNull()
                 if (newChat != null) {
                     currentChat.item = newChat
+                }
+                // Close removed chats
+                if (currentChat.item in it.removed) {
+                    currentChat.item = null
                 }
             }
         })

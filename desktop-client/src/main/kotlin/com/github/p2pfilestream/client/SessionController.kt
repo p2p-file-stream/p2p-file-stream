@@ -68,6 +68,15 @@ class SessionController : Controller() {
         chats.add(chat)
     }
 
+    private fun removeChat(nickname: String) {
+        val chat = chatByNickname(nickname)
+        if (chat != null) {
+            chats.remove(chat)
+        } else {
+            logger.error { "Chat to remove not found" }
+        }
+    }
+
     inner class Receiver : SessionClient {
         fun connectionEstablished(server: SessionServer) {
             logger.info { "Connected to Session Server" }
@@ -113,6 +122,7 @@ class SessionController : Controller() {
 
         override fun declined(nickname: String, error: SessionClient.ResponseError) {
             Platform.runLater {
+                removeChat(nickname)
                 alert(
                     Alert.AlertType.INFORMATION,
                     "Could not connect you with $nickname",
