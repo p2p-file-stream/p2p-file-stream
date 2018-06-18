@@ -8,6 +8,7 @@ import com.github.p2pfilestream.client.Styles
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
+import mu.KLogging
 import tornadofx.*
 import java.time.format.DateTimeFormatter
 
@@ -18,6 +19,8 @@ class ChatView : View() {
         get() = currentChat.itemProperty.get()
 
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    private companion object : KLogging()
 
     override val root = vbox {
         listview(currentChat.chatMessages) {
@@ -89,10 +92,10 @@ class ChatView : View() {
         val file = chooseFile("Upload file", emptyArray())
             .firstOrNull()
         if (file != null) {
-            println("You choosed: ${file.name}")
+            logger.info { "You chose ${file.name}" }
             controller?.sendFile(file)
         } else {
-            println("File picker cancelled")
+            logger.info { "File picker cancelled" }
         }
     }
 

@@ -76,7 +76,7 @@ class AccountController : Controller() {
     }
 
     private fun login(authCode: String) {
-        println("authCode: $authCode")
+        logger.info { "authCode: $authCode" }
         val data = """{"grant_type":"authorization_code","client_id": "$clientId",
                             |"code_verifier": "$verifier","code": "$authCode",
                             |"redirect_uri": "$baseURL/mobile" }""".trimMargin()
@@ -84,7 +84,7 @@ class AccountController : Controller() {
             .header("content-type", "application/json")
             .body(data)
             .asString().body
-        println("Auth0 response: ${body}")
+        logger.info { "Auth0 response: ${body}" }
         val auth0Response: Auth0Response = objectMapper.readValue(body)
         val idToken = Jwts.parser()
             .setSigningKeyResolver(object : SigningKeyResolverAdapter() {
@@ -125,7 +125,7 @@ class AccountController : Controller() {
         return try {
             accountServer.postForObject("/nickname", device)!!
         } catch (e: Exception) {
-            println(e)
+            logger.error(e) { "Error posting nickname" }
             RegisterResponse(RegisterRequestException(e.toString()))
         }
     }
