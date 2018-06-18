@@ -6,6 +6,7 @@ import com.github.p2pfilestream.client.session.AccountController
 import com.github.p2pfilestream.client.session.SessionController
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
+import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import tornadofx.*
 import java.time.format.DateTimeFormatter
@@ -34,17 +35,22 @@ class MainView : View("P2P File Stream") {
                     replaceWith(LoginView::class)
                 }
             }
-            hbox {
+            hbox(10) {
                 // Information about current chat
+                alignment = Pos.CENTER_RIGHT
                 addClass(Styles.header)
                 label(currentChat.nicknameProperty)
                 label(currentChat.emailProperty)
+                button("Download directory").action {
+                    currentChat.item?.chooseDirectory()
+                }
                 button("Close chat") {
                     action {
                         currentChat.item.close()
                     }
                     visibleWhen(currentChat.closed.not())
                 }
+                visibleWhen(currentChat.empty.not())
             }
         }
         row {

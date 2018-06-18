@@ -84,7 +84,7 @@ class Chat(
     }
 
     /** Choose download dir */
-    private fun chooseDirectory() {
+    fun chooseDirectory() {
         directory = tornadofx.chooseDirectory("Choose download directory")
     }
 
