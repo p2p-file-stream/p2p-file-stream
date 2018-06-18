@@ -10,7 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-class AccountRepositoryTest {
+class AccountRepositoryTestIt {
     @Autowired
     lateinit var accountRepository: AccountRepository
 
