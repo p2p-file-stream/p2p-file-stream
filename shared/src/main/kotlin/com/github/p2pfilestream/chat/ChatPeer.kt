@@ -38,3 +38,8 @@ fun ChatPeer.onDisconnect(block: () -> Unit): DisconnectableChatPeer =
             block()
         }
     }
+
+fun ChatPeer.onChunk(block: (messageIndex: Int, chunk: BinaryMessageChunk) -> Unit) =
+    object : ChatPeer by this {
+        override fun chunk(messageIndex: Int, chunk: BinaryMessageChunk) = block(messageIndex, chunk)
+    }

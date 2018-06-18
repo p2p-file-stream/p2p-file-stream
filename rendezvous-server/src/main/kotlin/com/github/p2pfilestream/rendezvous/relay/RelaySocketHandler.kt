@@ -2,13 +2,11 @@ package com.github.p2pfilestream.rendezvous.relay
 
 import mu.KLogging
 import org.springframework.stereotype.Component
-import org.springframework.web.socket.CloseStatus
-import org.springframework.web.socket.TextMessage
-import org.springframework.web.socket.WebSocketSession
-import org.springframework.web.socket.handler.TextWebSocketHandler
+import org.springframework.web.socket.*
+import org.springframework.web.socket.handler.AbstractWebSocketHandler
 
 @Component
-class RelaySocketHandler : TextWebSocketHandler() {
+class RelaySocketHandler : AbstractWebSocketHandler() {
     private val sessions = PairSet<WebSocketSession>()
 
     /** Clients waiting on a match, keys are chat-ids */
@@ -36,6 +34,11 @@ class RelaySocketHandler : TextWebSocketHandler() {
                 ?: logger.error { "Client sent message, but other was not yet connected" }
     }
 
+    override fun handleBinaryMessage(session: WebSocketSession, message: BinaryMessage) {
+        sessions.other(session)?.sendIfOpen(message)
+                ?: logger.error { "Client sent message, but other was not yet connected" }
+    }
+
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
         val other = sessions.remove(session)
         if (other != null) {
@@ -52,7 +55,7 @@ class RelaySocketHandler : TextWebSocketHandler() {
         return session.attributes["chatId"] as Long
     }
 
-    private fun WebSocketSession.sendIfOpen(message: TextMessage) {
+    private fun WebSocketSession.sendIfOpen(message: WebSocketMessage<*>) {
         if (this.isOpen) {
             this.sendMessage(message)
         }

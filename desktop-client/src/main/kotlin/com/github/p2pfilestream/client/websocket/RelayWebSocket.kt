@@ -1,22 +1,21 @@
 package com.github.p2pfilestream.client.websocket
 
-import com.github.p2pfilestream.chat.ChatPeer
-import com.github.p2pfilestream.chat.DisconnectableChatPeer
-import com.github.p2pfilestream.chat.onDisconnect
+import com.github.p2pfilestream.chat.*
 import com.github.p2pfilestream.encoding.MessageDecoder
 import com.github.p2pfilestream.encoding.MessageEncoder
 import mu.KLogging
+import org.springframework.web.socket.BinaryMessage
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.client.WebSocketConnectionManager
-import org.springframework.web.socket.handler.TextWebSocketHandler
+import org.springframework.web.socket.handler.AbstractWebSocketHandler
 
 class RelayWebSocket(
     chatId: Long,
     rendezvousServer: RendezvousServer,
     private val connected: (DisconnectableChatPeer) -> DisconnectableChatPeer
-) : TextWebSocketHandler() {
+) : AbstractWebSocketHandler() {
     companion object : KLogging()
 
     private val manager: WebSocketConnectionManager
@@ -38,6 +37,10 @@ class RelayWebSocket(
             if (session.isOpen) {
                 session.sendMessage(TextMessage(it))
             }
+        }.onChunk { messageIndex, chunk ->
+            if (session.isOpen) {
+                session.sendMessage(BinaryMessage(chunk.encode(messageIndex)))
+            }
         }.onDisconnect {
             manager.stop()
         }
@@ -48,6 +51,10 @@ class RelayWebSocket(
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val bytes = message.asBytes()
         decode(bytes)
+    }
+
+    override fun handleBinaryMessage(session: WebSocketSession, message: BinaryMessage) {
+        BinaryMessageChunk.decode(message.payload, chatClient::chunk)
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
