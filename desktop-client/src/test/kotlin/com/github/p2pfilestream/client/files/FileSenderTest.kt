@@ -9,7 +9,7 @@ import org.junit.jupiter.api.TestInstance
 import java.io.File
 import kotlin.test.assertEquals
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class FileSenderTest {
     private val downloader: FileDownloader = mockk(relaxed = true)
     private val text = "Hello World, this is a test file!"
@@ -44,19 +44,13 @@ class FileSenderTest {
         val chunkSize = 8
         val fileSender =
             FileSender(file, downloader, chunkSize, cloneBytes = true)
-        // Pause after the 2rd chunk
-        every {
-            downloader.chunk(match { it.index == 1 })
-        } answers {
-            fileSender.pause()
-        }
         // Start sender
         fileSender.start()
-        fileSender.joinReaderThread()
+        // Pause
+        fileSender.pause()
         // Verify pausing
-        verifySequence {
-            downloader.chunk(BinaryMessageChunk(0, "Hello Wo".toByteArray()))
-            downloader.chunk(BinaryMessageChunk(1, "rld, thi".toByteArray()))
+        verify(inverse = true) {
+            downloader.close(any())
         }
     }
 
@@ -65,23 +59,19 @@ class FileSenderTest {
         val chunkSize = 8
         val fileSender =
             FileSender(file, downloader, chunkSize, cloneBytes = true)
-        // Pause after the 2rd chunk
-        every {
-            downloader.chunk(match { it.index == 1 })
-        } answers {
-            fileSender.pause()
-        }
         // Start sender
         fileSender.start()
+        // Pause
+        fileSender.pause()
         fileSender.joinReaderThread()
         // Start it again
         clearMocks(downloader)
         fileSender.start()
         fileSender.joinReaderThread()
-        verifySequence {
-            downloader.chunk(BinaryMessageChunk(2, "s is a t".toByteArray()))
-            downloader.chunk(BinaryMessageChunk(3, "est file".toByteArray()))
-            downloader.chunk(BinaryMessageChunk(4, "!".toByteArray()))
+        verify {
+            downloader.chunk(any())
+        }
+        verify(exactly = 1) {
             downloader.close()
         }
     }

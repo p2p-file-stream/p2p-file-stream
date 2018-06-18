@@ -108,7 +108,10 @@ class FileSender(
     }
 
     fun joinReaderThread() {
-        readerThread?.join()
-                ?: logger.warn { "readerThread was null" }
+        if (readerThread?.isAlive == true) {
+            readerThread?.join()
+        } else {
+            logger.warn { "readerThread is not alive" }
+        }
     }
 }
