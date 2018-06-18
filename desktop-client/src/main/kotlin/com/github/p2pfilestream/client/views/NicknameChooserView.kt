@@ -1,9 +1,9 @@
 package com.github.p2pfilestream.client.views
 
-import com.github.p2pfilestream.client.AccountController
-import com.github.p2pfilestream.client.SessionController
 import com.github.p2pfilestream.client.dal.DeviceStore
 import com.github.p2pfilestream.client.dal.PreferencesDeviceStore
+import com.github.p2pfilestream.client.session.AccountController
+import com.github.p2pfilestream.client.session.SessionController
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.Alert
 import tornadofx.*

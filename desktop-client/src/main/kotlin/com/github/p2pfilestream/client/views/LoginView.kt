@@ -1,6 +1,6 @@
 package com.github.p2pfilestream.client.views
 
-import com.github.p2pfilestream.client.AccountController
+import com.github.p2pfilestream.client.session.AccountController
 import tornadofx.View
 import tornadofx.webview
 

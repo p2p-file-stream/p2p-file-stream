@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.session
 
 import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -37,7 +37,7 @@ class AccountController : Controller() {
     lateinit var account: Account
 
     private val accountServer = RestTemplate().apply {
-        logger.info { "accountServerUrl=${accountServerUrl}" }
+        logger.info { "accountServerUrl=$accountServerUrl" }
         uriTemplateHandler = DefaultUriBuilderFactory(accountServerUrl)
     }
 

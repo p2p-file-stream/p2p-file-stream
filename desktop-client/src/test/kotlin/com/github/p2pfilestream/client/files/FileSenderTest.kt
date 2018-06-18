@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.files
 
 import com.github.p2pfilestream.chat.BinaryMessageChunk
 import com.github.p2pfilestream.chat.FileDownloader
@@ -42,7 +42,8 @@ class FileSenderTest {
     @Test
     fun `Pausing file upload`() {
         val chunkSize = 8
-        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        val fileSender =
+            FileSender(file, downloader, chunkSize, cloneBytes = true)
         // Pause after the 2rd chunk
         every {
             downloader.chunk(match { it.index == 1 })
@@ -62,7 +63,8 @@ class FileSenderTest {
     @Test
     fun `Resume after pausing`() {
         val chunkSize = 8
-        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        val fileSender =
+            FileSender(file, downloader, chunkSize, cloneBytes = true)
         // Pause after the 2rd chunk
         every {
             downloader.chunk(match { it.index == 1 })
@@ -87,7 +89,8 @@ class FileSenderTest {
     @Test
     fun `Cancel fileSender`() {
         val chunkSize = 8
-        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        val fileSender =
+            FileSender(file, downloader, chunkSize, cloneBytes = true)
         // Cancel after the 2rd chunk
         every {
             downloader.chunk(match { it.index == 1 })
@@ -117,7 +120,8 @@ class FileSenderTest {
     @Test
     fun `Starting twice shouldn't throw exception, but only log a warning`() {
         val chunkSize = 5
-        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        val fileSender =
+            FileSender(file, downloader, chunkSize, cloneBytes = true)
         fileSender.start()
         fileSender.start()
         fileSender.joinReaderThread()
@@ -134,7 +138,8 @@ class FileSenderTest {
     @Test
     fun `Progress percentage`() {
         val chunkSize = 8
-        val fileSender = FileSender(file, downloader, chunkSize, cloneBytes = true)
+        val fileSender =
+            FileSender(file, downloader, chunkSize, cloneBytes = true)
         // Percentage should be 0%
         assertEquals(0.0, fileSender.progressPercentage.get())
         fileSender.start()

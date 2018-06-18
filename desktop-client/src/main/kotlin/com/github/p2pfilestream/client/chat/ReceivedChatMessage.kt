@@ -1,7 +1,8 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.chat
 
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.chat.ChatMessage
+import com.github.p2pfilestream.client.files.FileStreamProgress
 import java.time.LocalDateTime
 
 /**

@@ -1,7 +1,9 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.chat
 
 import com.github.p2pfilestream.Device
 import com.github.p2pfilestream.chat.*
+import com.github.p2pfilestream.client.files.FileReceiver
+import com.github.p2pfilestream.client.files.FileSender
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -67,7 +69,14 @@ class Chat(
     }
 
     private fun displayUserMessage(message: ChatMessage, fileSender: FileSender? = null) {
-        chatMessages.add(ReceivedChatMessage(message, userDevice, true, fileSender))
+        chatMessages.add(
+            ReceivedChatMessage(
+                message,
+                userDevice,
+                true,
+                fileSender
+            )
+        )
     }
 
     fun close() {
@@ -143,7 +152,11 @@ class Chat(
             Platform.runLater {
                 createFile(binaryMessage.name)?.let { file ->
                     val index = binaryMessage.index
-                    val fileReceiver = FileReceiver(file, chatPeer.uploader(index), binaryMessage.size)
+                    val fileReceiver = FileReceiver(
+                        file,
+                        chatPeer.uploader(index),
+                        binaryMessage.size
+                    )
                     fileReceivers[index] = fileReceiver
                     displayRemoteMessage(binaryMessage, fileReceiver)
                 }
@@ -151,7 +164,14 @@ class Chat(
         }
 
         private fun displayRemoteMessage(chatMessage: ChatMessage, fileReceiver: FileReceiver? = null) {
-            chatMessages.add(ReceivedChatMessage(chatMessage, peerDevice!!, false, fileReceiver))
+            chatMessages.add(
+                ReceivedChatMessage(
+                    chatMessage,
+                    peerDevice!!,
+                    false,
+                    fileReceiver
+                )
+            )
         }
 
         override fun chunk(messageIndex: Int, chunk: BinaryMessageChunk) =

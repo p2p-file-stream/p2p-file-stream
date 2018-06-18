@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.files
 
 import com.github.p2pfilestream.chat.BinaryMessageChunk
 import com.github.p2pfilestream.chat.FileDownloader

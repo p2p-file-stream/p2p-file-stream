@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.chat
 
 import tornadofx.ItemViewModel
 import tornadofx.stringBinding

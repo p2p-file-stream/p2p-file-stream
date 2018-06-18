@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.files
 
 import javafx.beans.binding.DoubleBinding
 import javafx.beans.property.SimpleBooleanProperty

@@ -1,8 +1,10 @@
 package com.github.p2pfilestream.client
 
 import com.github.p2pfilestream.client.dal.PreferencesDeviceStore
+import com.github.p2pfilestream.client.session.SessionController
 import com.github.p2pfilestream.client.views.LoginView
 import com.github.p2pfilestream.client.views.MainView
+import com.github.p2pfilestream.client.views.Styles
 import javafx.application.Application
 import mu.KLogging
 import tornadofx.App

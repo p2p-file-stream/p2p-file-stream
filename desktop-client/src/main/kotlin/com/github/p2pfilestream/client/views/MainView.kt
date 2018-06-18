@@ -1,10 +1,9 @@
 package com.github.p2pfilestream.client.views
 
-import com.github.p2pfilestream.client.AccountController
-import com.github.p2pfilestream.client.ChatModel
-import com.github.p2pfilestream.client.SessionController
-import com.github.p2pfilestream.client.Styles
+import com.github.p2pfilestream.client.chat.ChatModel
 import com.github.p2pfilestream.client.dal.PreferencesDeviceStore
+import com.github.p2pfilestream.client.session.AccountController
+import com.github.p2pfilestream.client.session.SessionController
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
 import javafx.scene.layout.Priority

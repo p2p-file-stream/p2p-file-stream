@@ -1,8 +1,9 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.session
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.p2pfilestream.Account
 import com.github.p2pfilestream.Device
+import com.github.p2pfilestream.client.chat.Chat
 import com.github.p2pfilestream.client.websocket.RelayWebSocket
 import com.github.p2pfilestream.client.websocket.RendezvousServer
 import com.github.p2pfilestream.client.websocket.SessionWebSocket

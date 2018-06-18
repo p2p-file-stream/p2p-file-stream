@@ -1,6 +1,6 @@
 package com.github.p2pfilestream.client.websocket
 
-import com.github.p2pfilestream.client.SessionController
+import com.github.p2pfilestream.client.session.SessionController
 import com.github.p2pfilestream.encoding.MessageDecoder
 import com.github.p2pfilestream.encoding.MessageEncoder
 import com.github.p2pfilestream.rendezvous.SessionClient

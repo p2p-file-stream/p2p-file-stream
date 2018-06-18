@@ -1,4 +1,4 @@
-package com.github.p2pfilestream.client
+package com.github.p2pfilestream.client.views
 
 import javafx.scene.paint.Color
 import tornadofx.Stylesheet

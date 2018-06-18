@@ -2,9 +2,8 @@ package com.github.p2pfilestream.client.views
 
 import com.github.p2pfilestream.chat.BinaryMessage
 import com.github.p2pfilestream.chat.TextMessage
-import com.github.p2pfilestream.client.ChatController
-import com.github.p2pfilestream.client.ChatModel
-import com.github.p2pfilestream.client.Styles
+import com.github.p2pfilestream.client.chat.ChatController
+import com.github.p2pfilestream.client.chat.ChatModel
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority

@@ -1,6 +1,6 @@
 package com.github.p2pfilestream.client.websocket
 
-import com.github.p2pfilestream.client.SessionController
+import com.github.p2pfilestream.client.session.SessionController
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
