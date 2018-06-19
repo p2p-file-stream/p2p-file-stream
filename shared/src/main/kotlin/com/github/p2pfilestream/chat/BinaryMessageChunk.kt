@@ -13,6 +13,7 @@ data class BinaryMessageChunk(
             .putInt(messageIndex)
             .putInt(index)
             .put(payload)
+            .flip() as ByteBuffer
     }
 
     companion object {

@@ -54,6 +54,10 @@ class RelayWebSocket(
     }
 
     override fun handleBinaryMessage(session: WebSocketSession, message: BinaryMessage) {
+        if (message.payloadLength <= 8) {
+            logger.warn { "Received empty binary message" }
+            return
+        }
         BinaryMessageChunk.decode(message.payload, chatClient::chunk)
     }
 
