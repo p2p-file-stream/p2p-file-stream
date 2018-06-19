@@ -53,7 +53,7 @@ class ChatView : View() {
                             progressbar(progress.progressPercentage)
                             button("Cancel") {
                                 action {
-                                    progress.cancel()
+                                    progress.userCancel()
                                 }
                                 visibleProperty().bind(progress.finishedProperty.not())
                             }

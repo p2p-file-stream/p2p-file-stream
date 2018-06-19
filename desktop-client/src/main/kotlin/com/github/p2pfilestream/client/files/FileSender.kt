@@ -8,6 +8,10 @@ import java.io.File
 import java.io.IOException
 import kotlin.concurrent.thread
 
+/**
+ * Reads a file and sends message-chunks.
+ * Reacts to start and pause messages from receiver.
+ */
 class FileSender(
     private val file: File,
     private val downloader: FileDownloader,
@@ -58,6 +62,12 @@ class FileSender(
         logger.info { "Cancelling" }
         cancelled = true
         sending = false
+    }
+
+    /** Triggered if the user presses cancel */
+    override fun userCancel() {
+        downloader.close(true)
+        cancel()
     }
 
     /**

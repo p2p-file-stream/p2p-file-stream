@@ -12,7 +12,10 @@ import kotlin.concurrent.thread
 private const val MIN_BUFFER = 5
 private const val MAX_BUFFER = 100
 
-/** Receives chunks for a certain file */
+/**
+ * Receives chunks for a certain file.
+ * Also sends start and pause messages to control the speed.
+ */
 class FileReceiver(
     private val file: File,
     private val uploader: FileUploader,
@@ -59,7 +62,8 @@ class FileReceiver(
     }
 
     /** Triggered if the user presses cancel */
-    override fun cancel() {
+    override fun userCancel() {
+        uploader.cancel()
         close(true)
     }
 

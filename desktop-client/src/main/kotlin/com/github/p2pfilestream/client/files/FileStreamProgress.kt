@@ -26,5 +26,5 @@ abstract class FileStreamProgress(
     }
 
     /** Triggered if the user presses cancel */
-    abstract fun cancel()
+    abstract fun userCancel()
 }
