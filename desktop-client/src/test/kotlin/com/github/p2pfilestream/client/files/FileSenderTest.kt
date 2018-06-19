@@ -9,7 +9,7 @@ import org.junit.jupiter.api.TestInstance
 import java.io.File
 import kotlin.test.assertEquals
 
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileSenderTest {
     private val downloader: FileDownloader = mockk(relaxed = true)
     private val text = "Hello World, this is a test file!"
