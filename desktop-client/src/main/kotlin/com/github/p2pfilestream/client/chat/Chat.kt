@@ -124,8 +124,9 @@ class Chat(
         fileSender.block()
     }
 
-
+    /** This object receives all the WebSocket messages from another client */
     val receiver = object : ChatController.Receiver {
+        /** Called after the connection is established */
         override fun connectionEstablished(chatPeer: DisconnectableChatPeer, device: Device) {
             Platform.runLater {
                 this@Chat.chatPeer = chatPeer

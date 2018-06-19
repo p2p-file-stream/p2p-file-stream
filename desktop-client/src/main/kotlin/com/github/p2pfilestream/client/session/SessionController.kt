@@ -78,6 +78,9 @@ class SessionController : Controller() {
         }
     }
 
+    /**
+     * This class receives all the WebSocket-messages.
+     */
     inner class Receiver : SessionClient {
         fun connectionEstablished(server: SessionServer) {
             logger.info { "Connected to Session Server" }
@@ -102,8 +105,11 @@ class SessionController : Controller() {
                     "${device.nickname} requested a chat with you",
                     buttons = *arrayOf(confirm, decline)
                 ) {
-                    addChat(device.nickname)
-                    sessionServer.response(device.nickname, it == confirm)
+                    val confirmed = it == confirm
+                    if (confirmed) {
+                        addChat(device.nickname)
+                    }
+                    sessionServer.response(device.nickname, confirmed)
                 }
             }
         }

@@ -100,13 +100,13 @@ class FileReceiver(
     }
 
     private fun pause() {
-        logger.warn { "Send pause message" }
+        logger.info { "Send pause message" }
         paused = true
         uploader.pause()
     }
 
     private fun start() {
-        logger.warn { "Send start message" }
+        logger.info { "Send start message" }
         paused = false
         uploader.start()
     }
