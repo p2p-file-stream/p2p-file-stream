@@ -9,7 +9,7 @@ import tornadofx.webview
  *
  * https://auth0.com/docs/application-auth/current/mobile-desktop
  */
-class LoginView : View() {
+class LoginView : View(title = "P2P File Stream | Login") {
 
     private val accountController: AccountController by inject()
 
