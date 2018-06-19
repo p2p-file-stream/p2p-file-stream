@@ -37,6 +37,7 @@ class SessionWebSocket(
             }
         }
         sessionClient.connectionEstablished(sessionServer)
+        startPinging(session)
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {

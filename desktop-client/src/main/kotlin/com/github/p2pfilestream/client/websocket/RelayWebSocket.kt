@@ -46,6 +46,7 @@ class RelayWebSocket(
         }
         chatClient = connected(other)
         decode = MessageDecoder<ChatPeer>(chatClient)
+        startPinging(session)
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
