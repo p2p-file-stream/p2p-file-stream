@@ -37,6 +37,9 @@ class Chat(
     val closedProperty = SimpleBooleanProperty()
     var closed by closedProperty
 
+    val openedProperty = SimpleBooleanProperty(false)
+    private var opened by openedProperty
+
     /** Maps MessageIndex to FileReceivers */
     private val fileReceivers = HashMap<Int, FileReceiver>()
     /** Maps MessageIndex to FileSenders */
@@ -51,6 +54,10 @@ class Chat(
     private companion object : KLogging()
 
     override fun sendFile(file: File) {
+        if (!::chatPeer.isInitialized) {
+            logger.error { "ChatPeer not yet initialized" }
+            return
+        }
         val messageIndex = nextMessageIndex()
         val fileName = file.name
         val fileSize = file.length()
@@ -62,6 +69,10 @@ class Chat(
     }
 
     override fun sendText(text: String) {
+        if (!::chatPeer.isInitialized) {
+            logger.error { "ChatPeer not yet initialized" }
+            return
+        }
         logger.info { "Send text $text" }
         val message = TextMessage(text)
         chatPeer.text(message)
@@ -131,6 +142,7 @@ class Chat(
             Platform.runLater {
                 this@Chat.chatPeer = chatPeer
                 this@Chat.peerDevice = device
+                opened = true
             }
         }
 
