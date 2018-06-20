@@ -7,7 +7,20 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.javaMethod
 
 
-/** Translates a call on an interface to a JSON-message */
+/**
+ * Translates a call on an interface to a JSON-message.
+ *
+ * For example, the call `doStuff("abc", 123)` will be encoded to this JSON:
+ * ```
+ * {
+ *   "type": "doStuff",
+ *   "arguments": [
+ *      "abc",
+ *      123
+ *   ]
+ * }
+ * ```
+ */
 object MessageEncoder {
     val mapper = jacksonObjectMapper()
 

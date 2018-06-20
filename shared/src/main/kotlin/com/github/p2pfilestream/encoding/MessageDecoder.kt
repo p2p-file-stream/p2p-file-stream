@@ -8,6 +8,17 @@ import kotlin.reflect.jvm.javaType
 
 /**
  * Decodes json, and calls the method on an interface.
+ *
+ * For example, this JSON would be decoded to the call `receiver.doStuff("abc", 123)`
+ * ```
+ * {
+ *   "type": "doStuff",
+ *   "arguments": [
+ *      "abc",
+ *      123
+ *   ]
+ * }
+ * ```
  */
 class MessageDecoder<T : Any>(
     private val receiver: T
