@@ -150,9 +150,7 @@
                 <configuration>
                     <appName>p2p-file-stream-account-server</appName>
                     <processTypes>
-                        <web>java -Dserver.port=$PORT -jar target/account-server-0.1.jar
-                            --spring.profiles.active=production
-                        </web>
+                        <web>java -Dserver.port=$PORT -jar target/account-server-0.1.jar --spring.profiles.active=production</web>
                     </processTypes>
                     <includeTarget>false</includeTarget>
                     <includes>

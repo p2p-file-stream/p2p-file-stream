@@ -3,6 +3,7 @@ package com.github.p2pfilestream.client.websocket
 import com.github.p2pfilestream.client.session.SessionController
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Ignore
 import org.junit.jupiter.api.Test
 
 /**
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test
  *
  * RendezvousServer must be running
  */
+@Ignore
 class SessionWebSocketTestIt {
     @Test
     fun `Connect to session-server`() {
