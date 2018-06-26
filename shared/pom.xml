@@ -12,10 +12,6 @@
 
     <artifactId>shared</artifactId>
 
-    <properties>
-        <kotlin.version>1.2.41</kotlin.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>cglib</groupId>
