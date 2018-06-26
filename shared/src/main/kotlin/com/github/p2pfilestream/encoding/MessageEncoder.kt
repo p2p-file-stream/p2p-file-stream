@@ -22,30 +22,24 @@ import kotlin.reflect.jvm.javaMethod
  * ```
  */
 object MessageEncoder {
-    val mapper = jacksonObjectMapper()
+    private val mapper = jacksonObjectMapper()
 
-    inline fun <reified T : Any> create(noinline receiver: (ByteArray) -> Unit): T {
-        val implementation = proxy(T::class) {
-            receiver(mapper.writeValueAsBytes(it))
-        }
-        if (implementation !is T) {
-            throw IllegalArgumentException()
-        }
-        return implementation
-    }
+    inline fun <reified T : Any> create(noinline receiver: (ByteArray) -> Unit) =
+        proxy(T::class, receiver) as? T ?: throw IllegalArgumentException()
 
-    fun <T : Any> proxy(kClass: KClass<T>, receiver: (WebSocketMessage) -> Unit): Any {
-        val e = Enhancer()
-        e.setInterfaces(arrayOf(kClass.java))
-        val hash = e.hashCode()
-        e.setCallback(MethodInterceptor { obj, method, args, _ ->
-            return@MethodInterceptor when (method) {
-                Any::toString.javaMethod -> "MessageEncoder proxy"
-                Any::hashCode.javaMethod -> hash
-                Any::equals.javaMethod -> obj === args[0]
-                else -> receiver(WebSocketMessage(method.name, args.toList()))
-            }
-        })
-        return e.create()
-    }
+    fun <T : Any> proxy(kClass: KClass<T>, receiver: (ByteArray) -> Unit) =
+        Enhancer().apply {
+            setInterfaces(arrayOf(kClass.java))
+            setCallback(MethodInterceptor { obj, method, args, _ ->
+                return@MethodInterceptor when (method) {
+                    Any::toString.javaMethod -> "MessageEncoder proxy"
+                    Any::hashCode.javaMethod -> hashCode()
+                    Any::equals.javaMethod -> obj === args[0]
+                    else -> {
+                        val message = WebSocketMessage(method.name, args.toList())
+                        receiver(mapper.writeValueAsBytes(message))
+                    }
+                }
+            })
+        }.create()
 }

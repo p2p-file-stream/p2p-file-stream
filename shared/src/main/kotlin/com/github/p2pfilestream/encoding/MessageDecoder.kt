@@ -28,19 +28,20 @@ class MessageDecoder<T : Any>(
 
     override fun invoke(bytes: ByteArray) {
         val mapper = jacksonObjectMapper()
+        // We cannot decode the arguments yet, because we don't now the types
+        // So just parse it to a tree
         val message = mapper.readTree(bytes)
         val type = message[WebSocketMessage::type.name].asText()
         val jsonArguments = message[WebSocketMessage::arguments.name]
         // Find the method with name specified in type
         val function = types[type] ?: throw IllegalArgumentException("Type not found")
         // Parse the arguments to the right types
-        val arguments = arrayOfNulls<Any?>(function.valueParameters.size)
-        for ((i, parameter) in function.valueParameters.withIndex()) {
+        val arguments = function.valueParameters.mapIndexed {i, parameter ->
             val javaType = mapper.typeFactory.constructType(parameter.type.javaType)
-            arguments[i] = mapper.readValue(mapper.treeAsTokens(jsonArguments[i]), javaType)
+            mapper.readValue<Any?>(mapper.treeAsTokens(jsonArguments[i]), javaType)
         }
         // Call the method
         function.isAccessible = true
-        function.call(receiver, *arguments)
+        function.call(receiver, *arguments.toTypedArray())
     }
 }
